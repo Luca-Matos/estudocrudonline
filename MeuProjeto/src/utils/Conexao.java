@@ -5,9 +5,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Conexao {
-    private static final String URL = "jdbc:mysql://localhost:3306/estudos_db"; // nome do banco
+    private static final String URL = "jdbc:mysql://localhost:3306/estudocrud?useSSL=false&serverTimezone=UTC" + //
+                ""; // nome do banco
     private static final String USUARIO = "root";    // seu usuário MySQL
-    private static final String SENHA = "sua_senha"; // sua senha MySQL
+    private static final String SENHA = "root"; // sua senha MySQL
 
     private static Connection conexao;
 
