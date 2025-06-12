@@ -3,7 +3,7 @@ model\ConteudoDAO.class
 model\ResumoDAO.class
 model\Conteudo.class
 controller\App.class
-model\UsuarioDAO.class
 model\Usuario.class
-model\Materia.class
 model\MateriaDAO.class
+model\UsuarioDAO.class
+model\Materia.class

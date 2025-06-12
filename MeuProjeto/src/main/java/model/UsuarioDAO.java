@@ -7,6 +7,7 @@ import java.util.List;
 import model.Usuario;
 
 public class UsuarioDAO {
+    
     private Connection conexao;
 
     public UsuarioDAO(Connection connection) {
@@ -21,6 +22,8 @@ public class UsuarioDAO {
             stmt.setString(2, usuario.getEmail());
             stmt.setString(3, usuario.getSenha());
             stmt.executeUpdate();
+            
+
     
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
@@ -32,6 +35,26 @@ public class UsuarioDAO {
             e.printStackTrace();
         }
     }
+
+    public Usuario buscarPorEmailSenha(String email, String senha) throws Exception {
+        String sql = "SELECT * FROM usuario WHERE email = ? AND senha = ?";
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setString(1, email);
+            stmt.setString(2, senha);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Usuario usuario = new Usuario();
+                    usuario.setId(rs.getInt("id"));
+                    usuario.setNome(rs.getString("nome"));
+                    usuario.setEmail(rs.getString("email"));
+                    usuario.setSenha(rs.getString("senha"));
+                    return usuario;
+                }
+            }
+        }
+        return null;
+    }
+    
     
 
     // você pode adicionar métodos como buscarPorEmailSenha(), atualizar(), deletar(), etc.

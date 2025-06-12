@@ -2,7 +2,8 @@ package controller;
 
 import java.sql.Connection;
 import java.util.List;
-
+import static spark.Spark.*;
+import spark.ModelAndView;
 import model.Conteudo;
 import model.ConteudoDAO;
 import model.Materia;
@@ -14,41 +15,75 @@ import utils.Conexao;
 
 public class App {
     public static void main(String[] args) {
-        try (Connection conn = Conexao.getConexao()) {
+        System.out.println("🚀 Iniciando o servidor Spark...");
+        port(4567); // Define a porta explicitamente
 
-            UsuarioDAO usuarioDAO = new UsuarioDAO(conn);
-            Usuario usuario = new Usuario("Teste", "teste@email.com", "1234");
-            usuarioDAO.inserir(usuario); 
-            System.out.println(usuario.getId());
-            
-            // Testar inserção de matéria
-            MateriaDAO materiaDAO = new MateriaDAO(conn);
-            Materia m = new Materia();
-            m.setNome("História");
-            m.setUsuarioId(usuario.getId());
-            materiaDAO.adicionar(m);
+        staticFiles.location("/public"); // Serve arquivos estáticos de /resources/public
 
-            // Listar matérias
-            for (Materia mat : materiaDAO.listarTodas()) {
-                System.out.println("Matéria: " + mat.getNome());
+        // Configura resposta para HTML
+        after((req, res) -> res.type("text/html"));
+
+        // Redireciona a rota raiz para o arquivo home.html
+        get("/", (req, res) -> {
+            System.out.println("Rota / acessada");
+            res.redirect("/index.html");
+            return null;
+        });
+
+        // Redireciona para login.html
+        get("/login", (req, res) -> {
+            System.out.println("Rota /login acessada");
+            res.redirect("/login.html");
+            return null;
+        });
+
+        // Redireciona para register.html
+        get("/register", (req, res) -> {
+            System.out.println("Rota /register acessada");
+            res.redirect("/register.html");
+            return null;
+        });
+
+        post("/register", (req, res) -> {
+            try (Connection conn = Conexao.getConexao()) {
+                UsuarioDAO dao = new UsuarioDAO(conn);
+                Usuario u = new Usuario(req.queryParams("nome"), req.queryParams("email"), req.queryParams("senha"));
+                dao.inserir(u);
+                System.out.println("Usuário registrado: " + u.getEmail());
+                res.redirect("/login");
+            } catch (Exception e) {
+                e.printStackTrace();
+                res.status(500);
+                return "Erro ao registrar usuário: " + e.getMessage();
             }
+            return null;
+        });
 
-            // Testar inserção de conteúdo
-            ConteudoDAO conteudoDAO = new ConteudoDAO(conn);
-            Conteudo c = new Conteudo( "Idade Média", false, 2, "Estudo da sociedade feudal", m.getId());
-            conteudoDAO.adicionar(c);
-
-            // Testar salvar resultado e excluir
-            conteudoDAO.salvarResultadoEExcluir(c.getId());
-
-            // Testar mostrar resumo
-            ResumoDAO resumoDAO = new ResumoDAO(conn);
-            for (String r : resumoDAO.listarResumo()) {
-                System.out.println("Resumo: " + r);
+        post("/login", (req, res) -> {
+            try (Connection conn = Conexao.getConexao()) {
+                UsuarioDAO dao = new UsuarioDAO(conn);
+                Usuario u = dao.buscarPorEmailSenha(req.queryParams("email"), req.queryParams("senha"));
+                if (u != null) {
+                    req.session(true).attribute("usuario", u);
+                    System.out.println("Login efetuado: " + u.getEmail());
+                    res.redirect("/estudo.html");
+                } else {
+                    System.out.println("Falha no login para email: " + req.queryParams("email"));
+                    res.redirect("/login?erro=1");
+                }
             }
+            return null;
+        });
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        get("/index", (req, res) -> {
+            Usuario u = req.session().attribute("usuario");
+            if (u == null) {
+                res.redirect("/login");
+                return null;
+            }
+            System.out.println("Página index acessada pelo usuário: " + u.getEmail());
+            res.redirect("/index.html");
+            return null;
+        });
     }
 }
