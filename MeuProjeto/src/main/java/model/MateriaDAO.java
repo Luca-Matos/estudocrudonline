@@ -70,4 +70,24 @@ public class MateriaDAO {
             stmt.executeUpdate();
         }
     }
+
+    public List<Materia> listarPorUsuario(int usuarioId) throws SQLException {
+        List<Materia> lista = new ArrayList<>();
+        String sql = "SELECT * FROM materia WHERE usuario_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, usuarioId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Materia m = new Materia();
+                m.setId(rs.getInt("id"));
+                m.setNome(rs.getString("nome"));
+                m.setCor(rs.getString("cor"));
+                m.setUsuarioId(rs.getInt("usuario_id"));
+                lista.add(m);
+            }
+        }
+        return lista;
+    }
+    
+
 }

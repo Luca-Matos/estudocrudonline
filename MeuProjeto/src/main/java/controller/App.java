@@ -1,6 +1,7 @@
 package controller;
 
 import java.sql.Connection;
+import com.google.gson.Gson;
 import java.util.List;
 import static spark.Spark.*;
 import spark.ModelAndView;
@@ -118,6 +119,26 @@ public class App {
             return null;
         });
         
+        get("/materias", (req, res) -> {
+            System.out.println("Rota /materias acessada");
+            Usuario usuario = req.session().attribute("usuario");
+            if (usuario == null) {
+                res.status(401);
+                return "Não autorizado";
+            }
+        
+            try (Connection conn = Conexao.getConexao()) {
+                MateriaDAO dao = new MateriaDAO(conn);
+                List<Materia> materias = dao.listarPorUsuario(usuario.getId());
+        
+                res.type("application/json");
+                return new Gson().toJson(materias);
+            } catch (Exception e) {
+                res.status(500);
+                return "Erro ao buscar matérias: " + e.getMessage();
+            }
+        });
+
 
     }
 }
