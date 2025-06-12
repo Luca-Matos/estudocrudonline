@@ -6,6 +6,10 @@ public class Materia {
     private String cor;
     private int usuarioId;
     
+    public Materia() {
+
+    }
+
     public Materia(String nome, String cor, int usuarioId) {
         this.nome = nome;
         this.cor = cor;

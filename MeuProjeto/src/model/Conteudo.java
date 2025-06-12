@@ -5,6 +5,18 @@ public class Conteudo {
     private String titulo;
     private boolean estudado;
     private int horasPlanejadas;
+    private String descricao;
+
+    public Conteudo() {}
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String desc) {
+        this.descricao = desc;
+    }
+
     private int materiaId;
 
     public Conteudo(String titulo, boolean estudado, int horasPlanejadas, int materiaId) {

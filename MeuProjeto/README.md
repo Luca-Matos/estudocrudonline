@@ -1,21 +1,26 @@
 📂 MeuProjeto/
- ├── 📂 src/                # Código-fonte Java
- │    ├── 📂 model/         # Camada de modelo (dados e acesso ao banco)
- │    │    ├── Usuario.java         # Classe do usuário (entidade)
- │    │    ├── UsuarioDAO.java      # Classe DAO para acessar o banco
- │    ├── 📂 view/          # Interface do usuário (HTML, CSS, JavaScript)
- │    │    ├── index.html         # Página principal
- │    │    ├── style.css          # Estilos da página
- │    │    ├── script.js          # Lógica do front-end
- │    ├── 📂 controller/    # Lógica de controle e execução
- │    │    ├── App.java            # Classe principal para execução do sistema
- │    ├── 📂 utils/         # Utilitários e conexão com banco de dados
- │    │    ├── Conexao.java        # Classe para conectar ao MySQL
- ├── 📂 lib/                # Dependências externas
- │    ├── mysql-connector-java.jar # Driver JDBC do MySQL
- ├── 📂 sql/                # Scripts SQL para banco de dados
- │    ├── script.sql        # Criação das tabelas no MySQL
- ├── 📜 README.md           # Documentação do projeto
+ ├── 📂 src/
+ │    ├── 📂 model/
+ │    │    ├── Usuario.java
+ │    │    ├── UsuarioDAO.java
+ │    │    ├── Materia.java          ✅
+ │    │    ├── MateriaDAO.java       ✅
+ │    │    ├── Conteudo.java         ✅ NOVO
+ │    │    ├── ConteudoDAO.java      ✅ NOVO
+ │    ├── 📂 view/
+ │    │    ├── index.html            ✅ Atualizado
+ │    │    ├── style.css
+ │    │    ├── script.js             ✅ Atualizado
+ │    ├── 📂 controller/
+ │    │    ├── App.java
+ │    │    ├── ConteudoController.java ✅ NOVO (ou dentro de App.java por enquanto)
+ │    ├── 📂 utils/
+ │    │    ├── Conexao.java
+ ├── 📂 lib/
+ │    ├── mysql-connector-java.jar
+ ├── 📂 sql/
+ │    ├── script.sql                 ✅ Atualizado com novas tabelas
+ ├── 📜 README.md
 
 📂 Descrição dos Arquivos
 1️⃣ Model (Camada de Dados)

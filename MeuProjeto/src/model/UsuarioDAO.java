@@ -7,7 +7,7 @@ import model.Usuario;
 
 public class UsuarioDAO {
     private Connection conexao;
-
+    
     public UsuarioDAO() {
         conexao = utils.Conexao.getConexao();
     }
