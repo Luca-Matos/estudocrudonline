@@ -85,5 +85,39 @@ public class App {
             res.redirect("/index.html");
             return null;
         });
+
+        //materia
+
+        post("/criar-materia", (req, res) -> {
+            Usuario usuario = req.session().attribute("usuario");
+            if (usuario == null) {
+                res.redirect("/login");
+                return null;
+            }
+        
+            String nome = req.queryParams("nome");
+            String cor = req.queryParams("cor");
+        
+            try (Connection conn = Conexao.getConexao()) {
+                Materia materia = new Materia();
+                materia.setNome(nome);
+                materia.setCor(cor);
+                materia.setUsuarioId(usuario.getId());
+        
+                MateriaDAO dao = new MateriaDAO(conn);
+                dao.adicionar(materia);
+        
+                System.out.println("Matéria criada: " + nome + " (" + cor + ")");
+                res.redirect("/estudo.html"); // redireciona de volta
+            } catch (Exception e) {
+                e.printStackTrace();
+                res.status(500);
+                return "Erro ao criar matéria: " + e.getMessage();
+            }
+        
+            return null;
+        });
+        
+
     }
 }

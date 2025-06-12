@@ -1,8 +1,23 @@
 <!DOCTYPE html>
 <html>
-<head><title>Bem-vindo</title></head>
+<head>
+    <title>Bem-vindo</title>
+    <meta charset="UTF-8" />
+</head>
 <body>
     <h1>EstudoApp</h1>
-    
+
+    <h2>Criar Matéria</h2>
+    <form id="formMateria" action="/criar-materia" method="post">
+        <label for="nome">Nome da matéria:</label>
+        <input type="text" id="nome" name="nome" required><br>
+
+        <label for="cor">Cor:</label>
+        <input type="color" id="cor" name="cor" value="#ff0000"><br>
+
+        <button type="submit">Criar Matéria</button>
+    </form>
+
+    <div id="mensagem"></div>
 </body>
 </html>
