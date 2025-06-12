@@ -18,6 +18,7 @@ public class ConteudoDAO {
             stmt.setBoolean(2, conteudo.isEstudado());
             stmt.setInt(3, conteudo.getHorasPlanejadas());
             stmt.setString(4, conteudo.getDescricao());
+            stmt.setInt(5, conteudo.getMateriaId());
             stmt.executeUpdate();
         }
     }
@@ -34,6 +35,7 @@ public class ConteudoDAO {
                 c.setEstudado(rs.getBoolean("estudado"));
                 c.setHorasPlanejadas(rs.getInt("horas_planejadas"));
                 c.setDescricao(rs.getString("descricao"));
+                c.setMateriaId(rs.getInt("materia_id"));
                 return c;
             }
         }
@@ -52,11 +54,43 @@ public class ConteudoDAO {
                 c.setEstudado(rs.getBoolean("estudado"));
                 c.setHorasPlanejadas(rs.getInt("horas_planejadas"));
                 c.setDescricao(rs.getString("descricao"));
+                c.setMateriaId(rs.getInt("materia_id"));
                 lista.add(c);
             }
         }
         return lista;
     }
+
+    public void deletar(int id) throws SQLException {
+        String sql = "DELETE FROM conteudos WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        }
+    }
+
+    public void salvarResultadoEExcluir(int conteudoId) throws SQLException {
+        // Buscar os dados do conteúdo antes de excluir
+        String selectSql = "SELECT * FROM conteudos WHERE id = ?";
+        try (PreparedStatement selectStmt = connection.prepareStatement(selectSql)) {
+            selectStmt.setInt(1, conteudoId);
+            ResultSet rs = selectStmt.executeQuery();
+            if (rs.next()) {
+                String titulo = rs.getString("titulo");
+                int horas = rs.getInt("horas_estudadas");
+                int materiaId = rs.getInt("materia_id");
+    
+                // Salva no resumo
+                ResumoDAO resumoDAO = new ResumoDAO(connection);
+                resumoDAO.salvarResumo(materiaId, titulo, horas);
+    
+                // Deleta o conteúdo
+                deletar(conteudoId);
+            }
+        }
+    }
+    
+    
 
     // Métodos para atualizar, deletar, etc, podem ser adicionados aqui
 }

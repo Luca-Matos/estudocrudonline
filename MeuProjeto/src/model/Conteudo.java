@@ -6,6 +6,7 @@ public class Conteudo {
     private boolean estudado;
     private int horasPlanejadas;
     private String descricao;
+    private int materiaId;
 
     public Conteudo() {}
 
@@ -17,9 +18,9 @@ public class Conteudo {
         this.descricao = desc;
     }
 
-    private int materiaId;
+    
 
-    public Conteudo(String titulo, boolean estudado, int horasPlanejadas, int materiaId) {
+    public Conteudo(String titulo, boolean estudado, int horasPlanejadas, String descricao, int materiaId) {
         this.titulo = titulo;
         this.estudado = estudado;
         this.horasPlanejadas = horasPlanejadas;
