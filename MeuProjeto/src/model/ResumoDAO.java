@@ -25,7 +25,7 @@ public class ResumoDAO {
     String sql = """
         SELECT r.data_estudo, m.nome AS materia, r.conteudo_titulo, r.horas_estudadas
         FROM resumos r
-        JOIN materias m ON r.materia_id = m.id
+        JOIN materia m ON r.materia_id = m.id
         ORDER BY r.data_estudo DESC
     """;
 

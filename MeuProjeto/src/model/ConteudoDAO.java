@@ -12,19 +12,19 @@ public class ConteudoDAO {
     }
 
     public void adicionar(Conteudo conteudo) throws SQLException {
-        String sql = "INSERT INTO conteudos (titulo, estudado, horas_planejadas, descricao) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO conteudo (nome, horas_estudar, status, materia_id, descricao) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, conteudo.getTitulo());
             stmt.setBoolean(2, conteudo.isEstudado());
             stmt.setInt(3, conteudo.getHorasPlanejadas());
-            stmt.setString(4, conteudo.getDescricao());
-            stmt.setInt(5, conteudo.getMateriaId());
+            stmt.setString(5, conteudo.getDescricao());
+            stmt.setInt(4, conteudo.getMateriaId());
             stmt.executeUpdate();
         }
     }
 
     public Conteudo buscarPorId(int id) throws SQLException {
-        String sql = "SELECT * FROM conteudos WHERE id = ?";
+        String sql = "SELECT * FROM conteudo WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
@@ -43,7 +43,7 @@ public class ConteudoDAO {
     }
 
     public List<Conteudo> listarTodos() throws SQLException {
-        String sql = "SELECT * FROM conteudos";
+        String sql = "SELECT * FROM conteudo";
         List<Conteudo> lista = new ArrayList<>();
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
@@ -62,7 +62,7 @@ public class ConteudoDAO {
     }
 
     public void deletar(int id) throws SQLException {
-        String sql = "DELETE FROM conteudos WHERE id = ?";
+        String sql = "DELETE FROM conteudo WHERE id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
@@ -71,7 +71,7 @@ public class ConteudoDAO {
 
     public void salvarResultadoEExcluir(int conteudoId) throws SQLException {
         // Buscar os dados do conteúdo antes de excluir
-        String selectSql = "SELECT * FROM conteudos WHERE id = ?";
+        String selectSql = "SELECT * FROM conteudo WHERE id = ?";
         try (PreparedStatement selectStmt = connection.prepareStatement(selectSql)) {
             selectStmt.setInt(1, conteudoId);
             ResultSet rs = selectStmt.executeQuery();
