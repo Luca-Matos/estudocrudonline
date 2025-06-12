@@ -13,13 +13,19 @@ public class ConteudoDAO {
 
     public void adicionar(Conteudo conteudo) throws SQLException {
         String sql = "INSERT INTO conteudo (nome, horas_estudar, status, materia_id, descricao) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, conteudo.getTitulo());
-            stmt.setBoolean(2, conteudo.isEstudado());
-            stmt.setInt(3, conteudo.getHorasPlanejadas());
-            stmt.setString(5, conteudo.getDescricao());
+            stmt.setInt(2, conteudo.getHorasPlanejadas());
+            stmt.setBoolean(3, conteudo.isEstudado());
             stmt.setInt(4, conteudo.getMateriaId());
+            stmt.setString(5, conteudo.getDescricao());
             stmt.executeUpdate();
+    
+            // Recuperar o ID gerado automaticamente
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                conteudo.setId(rs.getInt(1));
+            }
         }
     }
 
@@ -31,9 +37,9 @@ public class ConteudoDAO {
             if (rs.next()) {
                 Conteudo c = new Conteudo();
                 c.setId(rs.getInt("id"));
-                c.setTitulo(rs.getString("titulo"));
-                c.setEstudado(rs.getBoolean("estudado"));
-                c.setHorasPlanejadas(rs.getInt("horas_planejadas"));
+                c.setTitulo(rs.getString("nome"));
+                c.setEstudado(rs.getBoolean("status"));
+                c.setHorasPlanejadas(rs.getInt("horas_estudar"));
                 c.setDescricao(rs.getString("descricao"));
                 c.setMateriaId(rs.getInt("materia_id"));
                 return c;
@@ -50,9 +56,9 @@ public class ConteudoDAO {
             while (rs.next()) {
                 Conteudo c = new Conteudo();
                 c.setId(rs.getInt("id"));
-                c.setTitulo(rs.getString("titulo"));
-                c.setEstudado(rs.getBoolean("estudado"));
-                c.setHorasPlanejadas(rs.getInt("horas_planejadas"));
+                c.setTitulo(rs.getString("nome"));
+                c.setEstudado(rs.getBoolean("status"));
+                c.setHorasPlanejadas(rs.getInt("horas_estudar"));
                 c.setDescricao(rs.getString("descricao"));
                 c.setMateriaId(rs.getInt("materia_id"));
                 lista.add(c);
@@ -76,8 +82,8 @@ public class ConteudoDAO {
             selectStmt.setInt(1, conteudoId);
             ResultSet rs = selectStmt.executeQuery();
             if (rs.next()) {
-                String titulo = rs.getString("titulo");
-                int horas = rs.getInt("horas_estudadas");
+                String titulo = rs.getString("nome");
+                int horas = rs.getInt("horas_estudar");
                 int materiaId = rs.getInt("materia_id");
     
                 // Salva no resumo
