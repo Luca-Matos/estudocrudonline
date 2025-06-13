@@ -249,6 +249,22 @@ public class App {
             }
         });
         
+        post("/salvar-resultado-e-excluir", (req, res) -> {
+            try (Connection conn = Conexao.getConexao()) {
+                int conteudoId = Integer.parseInt(req.queryParams("conteudoId"));
+        
+                ConteudoDAO dao = new ConteudoDAO(conn);
+                dao.salvarResultadoEExcluir(conteudoId);
+    
+                    return "Conteúdo salvo e excluído com sucesso";
+            } catch (Exception e) {
+                e.printStackTrace();
+                res.status(400);
+                return "Erro nos parâmetros ou na execução: " + e.getMessage();
+            }
+        });
+        
+        
         
 
     }

@@ -241,67 +241,108 @@
                 container.innerHTML = '';
 
                 lista.forEach(c => {
-                    const div = document.createElement("div");
-                    div.className = "conteudo";
+    const div = document.createElement("div");
+    div.className = "conteudo";
 
-                    const corConteudo = c.cor && c.cor.trim() !== "" ? c.cor : "#444";
-                    div.style.backgroundColor = corConteudo;
+    const corConteudo = c.cor && c.cor.trim() !== "" ? c.cor : "#444";
+    div.style.backgroundColor = corConteudo;
 
-                    // Criar o conteúdo principal (título + horas)
-                    const textoDiv = document.createElement("div");
-                    textoDiv.innerHTML = `<strong>${c.titulo}</strong><br>Horas: ${c.horasPlanejadas}`;
-                    textoDiv.style.flexGrow = "1"; // para ocupar espaço e deixar checkbox à direita
+    const textoDiv = document.createElement("div");
+    textoDiv.innerHTML = `<strong>${c.titulo}</strong><br>Horas: ${c.horasPlanejadas}`;
+    textoDiv.style.flexGrow = "1";
 
-                    // Criar wrapper do checkbox
-                    const checkboxWrapper = document.createElement("label");
-                    checkboxWrapper.className = "checkbox-wrapper";
-                    checkboxWrapper.title = "Marcar como estudado";
+    // --- Checkbox estudado ---
+    const checkboxWrapper = document.createElement("label");
+    checkboxWrapper.className = "checkbox-wrapper";
+    checkboxWrapper.title = "Marcar como estudado";
 
-                    const checkbox = document.createElement("input");
-                    checkbox.type = "checkbox";
-                    checkbox.checked = c.estudado ? true : false;
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = c.estudado ? true : false;
 
-                    checkboxWrapper.appendChild(checkbox);
+    checkboxWrapper.appendChild(checkbox);
 
-                    // Evitar que o clique no checkbox abra o pop-up
-                    checkbox.addEventListener("click", async (event) => {
-                        event.stopPropagation();
+    checkbox.addEventListener("click", async (event) => {
+        event.stopPropagation();
 
-                        // Atualizar status estudado no backend
-                        try {
-                            const formData = new URLSearchParams();
-                            formData.append("conteudoId", c.id);
-                            formData.append("estudado", checkbox.checked ? "true" : "false");
+        try {
+            const formData = new URLSearchParams();
+            formData.append("conteudoId", c.id);
+            formData.append("estudado", checkbox.checked ? "true" : "false");
 
-                            const resp = await fetch("/atualizar-estudado", {
-                                method: "POST",
-                                body: formData
-                            });
+            const resp = await fetch("/atualizar-estudado", {
+                method: "POST",
+                body: formData
+            });
 
-                            if (!resp.ok) {
-                                alert("Erro ao atualizar status estudado.");
-                                // Reverter checkbox em caso de erro
-                                checkbox.checked = !checkbox.checked;
-                            }
-                        } catch (err) {
-                            alert("Erro ao atualizar status estudado.");
-                            checkbox.checked = !checkbox.checked;
-                        }
-                    });
+            if (!resp.ok) {
+                alert("Erro ao atualizar status estudado.");
+                checkbox.checked = !checkbox.checked;
+            }
+        } catch (err) {
+            alert("Erro ao atualizar status estudado.");
+            checkbox.checked = !checkbox.checked;
+        }
+    });
 
-                    // Clique no div principal abre o pop-up
-                    div.addEventListener("click", () => {
-                        popup.style.backgroundColor = corConteudo;
-                        popupTitle.innerText = c.titulo;
-                        popupDescription.innerText = c.descricao || "(Sem descrição)";
-                        popupOverlay.style.display = "flex";
-                    });
+    // --- Botão de exclusão ---
+    const btnExcluir = document.createElement("button");
+    btnExcluir.innerText = "✖";
+    btnExcluir.title = "Excluir conteúdo";
+    btnExcluir.style.marginLeft = "10px";
+    btnExcluir.style.background = "transparent";
+    btnExcluir.style.border = "none";
+    btnExcluir.style.color = "white";
+    btnExcluir.style.fontSize = "18px";
+    btnExcluir.style.cursor = "pointer";
 
-                    div.appendChild(textoDiv);
-                    div.appendChild(checkboxWrapper);
+    btnExcluir.addEventListener("click", async (event) => {
+        event.stopPropagation();
 
-                    container.appendChild(div);
+        const confirmar = confirm(`Deseja excluir o conteúdo "${c.titulo}"?`);
+
+        if (confirmar) {
+            try {
+                const formData = new URLSearchParams();
+                formData.append("conteudoId", c.id);
+
+                const resp = await fetch("/salvar-resultado-e-excluir", {
+                    method: "POST",
+                    body: formData
                 });
+
+                if (resp.ok) {
+                    carregarConteudos(); // Atualiza a lista
+                } else {
+                    alert("Erro ao excluir conteúdo.");
+                }
+            } catch (err) {
+                alert("Erro ao excluir conteúdo.");
+                console.error(err);
+            }
+        }
+    });
+
+    // --- Monta estrutura: texto | checkbox | botão X ---
+    const controlesDiv = document.createElement("div");
+    controlesDiv.style.display = "flex";
+    controlesDiv.style.alignItems = "center";
+    controlesDiv.appendChild(checkboxWrapper);
+    controlesDiv.appendChild(btnExcluir);
+
+    div.addEventListener("click", () => {
+        popup.style.backgroundColor = corConteudo;
+        popupTitle.innerText = c.titulo;
+        popupDescription.innerText = c.descricao || "(Sem descrição)";
+        popupOverlay.style.display = "flex";
+    });
+
+    div.appendChild(textoDiv);
+    div.appendChild(controlesDiv);
+
+    container.appendChild(div);
+});
+
             }
 
             carregarConteudos();
