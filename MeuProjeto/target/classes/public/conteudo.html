@@ -1,353 +1,252 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Conteúdo da Matéria</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
+  <meta charset="UTF-8">
+  <title>Conteúdo da Matéria</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
 
-        #tituloMateria {
-            padding: 20px;
-            color: white;
-            text-align: center;
-            font-size: 24px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
+    #tituloMateria {
+      padding: 20px;
+      color: white;
+      text-align: center;
+      font-size: 24px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
 
-        #conteudoContainer {
-            padding: 20px;
-        }
+    #conteudoContainer {
+      padding: 2rem;
+    }
 
-        .conteudo {
-            border-radius: 6px;
-            color: white;
-            padding: 10px 10px 10px 15px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            user-select: none;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
+    #formConteudo {
+      margin-bottom: 20px;
+    }
 
-        /* Estilo do checkbox personalizado circular */
-        .checkbox-wrapper {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
+    #layoutConteudos {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
-        .checkbox-wrapper input[type="checkbox"] {
-            appearance: none;
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid white;
-            border-radius: 50%;
-            background-color: transparent;
-            position: relative;
-            cursor: pointer;
-            margin-left: 10px;
-            flex-shrink: 0;
-            transition: background-color 0.2s, border-color 0.2s;
-        }
+    #listaConteudos {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-        .checkbox-wrapper input[type="checkbox"]:checked {
-            background-color: white;
-            border-color: white;
-        }
+    @media (min-width: 768px) {
+      #layoutConteudos {
+        flex-direction: row;
+        align-items: flex-start;
+      }
 
-        /* Símbolo de check usando ::after */
-        .checkbox-wrapper input[type="checkbox"]:checked::after {
-            content: "✔";
-            position: absolute;
-            top: 1px;
-            left: 4px;
-            font-size: 14px;
-            color: #3366cc; /* cor do check */
-        }
+      #listaConteudos {
+        flex: 2;
+      }
 
-        /* Estilos do pop-up */
-        #popupOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
+      #graficoWrapper {
+        flex: 1;
+        max-width: 300px;
+      }
+    }
 
-        #popupTitle {
-            margin-top: 0;
-        }
+    .conteudo {
+      border-radius: 6px;
+      color: white;
+      padding: 10px 10px 10px 15px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-        #popup {
-            background-color: #444;
-            border-radius: 8px;
-            padding: 20px;
-            width: 90%;
-            max-width: 300px;
-            max-height: 80vh;
-            overflow-y: auto;
-            color: white;
-            position: relative;
-            box-shadow: 0 0 10px #000;
-            display: flex;
-            flex-direction: column;
-        }
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
 
-        #popupClose {
-            position: absolute;
-            top: 8px;
-            right: 12px;
-            background: transparent;
-            border: none;
-            font-size: 18px;
-            font-weight: bold;
-            color: white;
-            cursor: pointer;
-        }
+    .checkbox-wrapper input[type="checkbox"] {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid white;
+      border-radius: 50%;
+      background-color: transparent;
+      position: relative;
+      margin-left: 10px;
+    }
 
-        #popupDescription {
-            margin-top: 10px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
+    .checkbox-wrapper input[type="checkbox"]:checked {
+      background-color: white;
+    }
 
-                /* Estilo para telas maiores, como computadores */
-        @media (min-width: 768px) {
-            #popup {
-                width: 500px;
-                max-width: 90%;
-            }
-        }
+    .checkbox-wrapper input[type="checkbox"]:checked::after {
+      content: "✔";
+      position: absolute;
+      top: 1px;
+      left: 4px;
+      font-size: 14px;
+      color: #3366cc;
+    }
 
-        /* Estilo para telas muito grandes (monitores grandes) */
-        @media (min-width: 1200px) {
-            #popup {
-                width: 600px;
-            }
-        }
-    </style>
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+  </style>
 </head>
 <body>
 
-    <div id="tituloMateria">Carregando matéria...</div>
+<div id="tituloMateria">Carregando matéria...</div>
 
-    <div id="conteudoContainer">
-        <h3>Criar novo conteúdo</h3>
-        <form id="formConteudo">
-            <label>Título:</label><br>
-            <input type="text" id="titulo" name="titulo" required><br>
+<div id="conteudoContainer">
 
-            <label>Descrição:</label><br>
-            <textarea id="descricao" name="descricao"></textarea><br>
+  <form id="formConteudo">
+    <h3>Criar novo conteúdo</h3>
+    <label>Título:</label><br>
+    <input type="text" id="titulo" name="titulo" required><br>
+    <label>Descrição:</label><br>
+    <textarea id="descricao" name="descricao"></textarea><br>
+    <label>Horas planejadas:</label><br>
+    <input type="number" id="horas" name="horas" min="1" required><br>
+    <label>Cor:</label><br>
+    <input type="color" id="cor" name="cor" value="#3366cc"><br><br>
+    <button type="submit">Criar Conteúdo</button>
+  </form>
 
-            <label>Horas planejadas:</label><br>
-            <input type="number" id="horas" name="horas" min="1" required><br>
+  <div id="graficoWrapper">
+    <canvas id="graficoEstudo" height="200"></canvas>
+  </div>
 
-            <label>Cor:</label><br>
-            <input type="color" id="cor" name="cor" value="#3366cc"><br><br>
+  <div id="layoutConteudos">
+    <div id="listaConteudos"></div>
+  </div>
 
-            <button type="submit">Criar Conteúdo</button>
-        </form>
+</div>
 
-        <h3>Conteúdos cadastrados</h3>
-        <div id="listaConteudos"></div>
-    </div>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
 
-    <!-- Pop-up overlay -->
-    <div id="popupOverlay">
-        <div id="popup">
-            <button id="popupClose" aria-label="Fechar pop-up">×</button>
-            <h3 id="popupTitle"></h3>
-            <div id="popupDescription"></div>
-        </div>
-    </div>
+  let grafico;
 
-    <script>
-        const params = new URLSearchParams(window.location.search);
-        const id = params.get("id");
+  if (!id) {
+    document.getElementById("tituloMateria").innerText = "ID da matéria não fornecido.";
+  } else {
+    fetch(`/materia?id=${id}`)
+      .then(resp => resp.json())
+      .then(materia => {
+        const titulo = document.getElementById("tituloMateria");
+        titulo.innerText = materia.nome;
+        titulo.style.backgroundColor = materia.cor;
+      });
 
-        if (!id) {
-            document.getElementById("tituloMateria").innerText = "ID da matéria não fornecido.";
+    document.getElementById("formConteudo").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const formData = new URLSearchParams();
+      formData.append("titulo", document.getElementById("titulo").value);
+      formData.append("descricao", document.getElementById("descricao").value);
+      formData.append("horasPlanejadas", document.getElementById("horas").value);
+      formData.append("cor", document.getElementById("cor").value);
+      formData.append("materiaId", id);
+
+      const resp = await fetch("/criar-conteudo", {
+        method: "POST",
+        body: formData
+      });
+
+      if (resp.ok) {
+        document.getElementById("formConteudo").reset();
+        carregarConteudos();
+      } else {
+        alert("Erro ao criar conteúdo.");
+      }
+    });
+
+    async function carregarConteudos() {
+      const resp = await fetch(`/conteudos?materiaId=${id}`);
+      const lista = await resp.json();
+
+      const container = document.getElementById("listaConteudos");
+      container.innerHTML = '';
+
+      let horasEstudadas = 0;
+      let horasPendentes = 0;
+
+      lista.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "conteudo";
+        div.style.backgroundColor = c.cor || "#444";
+
+        const textoDiv = document.createElement("div");
+        textoDiv.innerHTML = `<strong>${c.titulo}</strong><br>Horas: ${c.horasPlanejadas}`;
+        textoDiv.style.flexGrow = "1";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = c.estudado;
+
+        checkbox.addEventListener("click", async (event) => {
+          event.stopPropagation();
+          const formData = new URLSearchParams();
+          formData.append("conteudoId", c.id);
+          formData.append("estudado", checkbox.checked);
+          await fetch("/atualizar-estudado", { method: "POST", body: formData });
+          carregarConteudos();
+        });
+
+        const label = document.createElement("label");
+        label.className = "checkbox-wrapper";
+        label.appendChild(checkbox);
+
+        div.appendChild(textoDiv);
+        div.appendChild(label);
+
+        container.appendChild(div);
+
+        const horas = parseInt(c.horasPlanejadas) || 0;
+        if (c.estudado) {
+          horasEstudadas += horas;
         } else {
-            fetch(`/materia?id=${id}`)
-                .then(resp => resp.json())
-                .then(materia => {
-                    const titulo = document.getElementById("tituloMateria");
-                    titulo.innerText = materia.nome;
-                    titulo.style.backgroundColor = materia.cor;
-                })
-                .catch(err => {
-                    document.getElementById("tituloMateria").innerText = "Erro ao carregar matéria.";
-                    console.error(err);
-                });
-
-            // Submissão do formulário
-            document.getElementById("formConteudo").addEventListener("submit", async function (e) {
-                e.preventDefault();
-
-                const formData = new URLSearchParams();
-                formData.append("titulo", document.getElementById("titulo").value);
-                formData.append("descricao", document.getElementById("descricao").value);
-                formData.append("horasPlanejadas", document.getElementById("horas").value);
-                formData.append("cor", document.getElementById("cor").value);
-                formData.append("materiaId", id);
-
-                const resp = await fetch("/criar-conteudo", {
-                    method: "POST",
-                    body: formData
-                });
-
-                if (resp.ok) {
-                    document.getElementById("formConteudo").reset();
-                    carregarConteudos();
-                } else {
-                    alert("Erro ao criar conteúdo.");
-                }
-            });
-
-            // Pop-up elementos
-            const popupOverlay = document.getElementById("popupOverlay");
-            const popup = document.getElementById("popup");
-            const popupTitle = document.getElementById("popupTitle");
-            const popupDescription = document.getElementById("popupDescription");
-            const popupClose = document.getElementById("popupClose");
-
-            popupClose.addEventListener("click", () => {
-                popupOverlay.style.display = "none";
-            });
-
-            popupOverlay.addEventListener("click", (e) => {
-                if (e.target === popupOverlay) {
-                    popupOverlay.style.display = "none";
-                }
-            });
-
-            async function carregarConteudos() {
-                const resp = await fetch(`/conteudos?materiaId=${id}`);
-                const lista = await resp.json();
-
-                const container = document.getElementById("listaConteudos");
-                container.innerHTML = '';
-
-                lista.forEach(c => {
-    const div = document.createElement("div");
-    div.className = "conteudo";
-
-    const corConteudo = c.cor && c.cor.trim() !== "" ? c.cor : "#444";
-    div.style.backgroundColor = corConteudo;
-
-    const textoDiv = document.createElement("div");
-    textoDiv.innerHTML = `<strong>${c.titulo}</strong><br>Horas: ${c.horasPlanejadas}`;
-    textoDiv.style.flexGrow = "1";
-
-    // --- Checkbox estudado ---
-    const checkboxWrapper = document.createElement("label");
-    checkboxWrapper.className = "checkbox-wrapper";
-    checkboxWrapper.title = "Marcar como estudado";
-
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = c.estudado ? true : false;
-
-    checkboxWrapper.appendChild(checkbox);
-
-    checkbox.addEventListener("click", async (event) => {
-        event.stopPropagation();
-
-        try {
-            const formData = new URLSearchParams();
-            formData.append("conteudoId", c.id);
-            formData.append("estudado", checkbox.checked ? "true" : "false");
-
-            const resp = await fetch("/atualizar-estudado", {
-                method: "POST",
-                body: formData
-            });
-
-            if (!resp.ok) {
-                alert("Erro ao atualizar status estudado.");
-                checkbox.checked = !checkbox.checked;
-            }
-        } catch (err) {
-            alert("Erro ao atualizar status estudado.");
-            checkbox.checked = !checkbox.checked;
+          horasPendentes += horas;
         }
-    });
+      });
 
-    // --- Botão de exclusão ---
-    const btnExcluir = document.createElement("button");
-    btnExcluir.innerText = "✖";
-    btnExcluir.title = "Excluir conteúdo";
-    btnExcluir.style.marginLeft = "10px";
-    btnExcluir.style.background = "transparent";
-    btnExcluir.style.border = "none";
-    btnExcluir.style.color = "white";
-    btnExcluir.style.fontSize = "18px";
-    btnExcluir.style.cursor = "pointer";
+      atualizarGrafico(horasEstudadas, horasPendentes);
+    }
 
-    btnExcluir.addEventListener("click", async (event) => {
-        event.stopPropagation();
+    function atualizarGrafico(estudadas, pendentes) {
+      const ctx = document.getElementById('graficoEstudo').getContext('2d');
+      if (grafico) grafico.destroy();
 
-        const confirmar = confirm(`Deseja excluir o conteúdo "${c.titulo}"?`);
-
-        if (confirmar) {
-            try {
-                const formData = new URLSearchParams();
-                formData.append("conteudoId", c.id);
-
-                const resp = await fetch("/salvar-resultado-e-excluir", {
-                    method: "POST",
-                    body: formData
-                });
-
-                if (resp.ok) {
-                    carregarConteudos(); // Atualiza a lista
-                } else {
-                    alert("Erro ao excluir conteúdo.");
-                }
-            } catch (err) {
-                alert("Erro ao excluir conteúdo.");
-                console.error(err);
+      grafico = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Estudadas', 'Pendentes'],
+          datasets: [{
+            data: [estudadas, pendentes],
+            backgroundColor: ['#4caf50', '#f44336'],
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom'
             }
+          }
         }
-    });
+      });
+    }
 
-    // --- Monta estrutura: texto | checkbox | botão X ---
-    const controlesDiv = document.createElement("div");
-    controlesDiv.style.display = "flex";
-    controlesDiv.style.alignItems = "center";
-    controlesDiv.appendChild(checkboxWrapper);
-    controlesDiv.appendChild(btnExcluir);
-
-    div.addEventListener("click", () => {
-        popup.style.backgroundColor = corConteudo;
-        popupTitle.innerText = c.titulo;
-        popupDescription.innerText = c.descricao || "(Sem descrição)";
-        popupOverlay.style.display = "flex";
-    });
-
-    div.appendChild(textoDiv);
-    div.appendChild(controlesDiv);
-
-    container.appendChild(div);
-});
-
-            }
-
-            carregarConteudos();
-        }
-    </script>
+    carregarConteudos();
+  }
+</script>
 
 </body>
 </html>
