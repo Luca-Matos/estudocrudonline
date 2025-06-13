@@ -139,6 +139,94 @@ public class App {
             }
         });
 
+        get("/materia", (req, res) -> {
+            String idStr = req.queryParams("id");
+            if (idStr == null) {
+                res.status(400);
+                return "ID da matéria não informado";
+            }
+        
+            try (Connection conn = Conexao.getConexao()) {
+                MateriaDAO dao = new MateriaDAO(conn);
+                int id = Integer.parseInt(idStr);
+                Materia m = dao.buscarPorId(id);
+                if (m == null) {
+                    res.status(404);
+                    return "Matéria não encontrada";
+                }
+                res.type("application/json");
+                return new Gson().toJson(m);
+            }
+        });
+        
+        // conteudos
+
+        post("/criar-conteudo", (req, res) -> {
+            Usuario usuario = req.session().attribute("usuario");
+            if (usuario == null) {
+                res.status(401);
+                return "Não autorizado";
+            }
+
+            String titulo = req.queryParams("titulo");
+            String descricao = req.queryParams("descricao");
+            String cor = req.queryParams("cor");
+            int horasPlanejadas = Integer.parseInt(req.queryParams("horasPlanejadas"));
+            int materiaId = Integer.parseInt(req.queryParams("materiaId"));
+
+            try (Connection conn = Conexao.getConexao()) {
+                ConteudoDAO dao = new ConteudoDAO(conn);
+                Conteudo c = new Conteudo();
+                c.setTitulo(titulo);
+                c.setDescricao(descricao);
+                c.setCor(cor);
+                c.setHorasPlanejadas(horasPlanejadas);
+                c.setMateriaId(materiaId);
+                c.setEstudado(false); // default
+
+                dao.adicionar(c);
+
+                res.status(201);
+                return "Conteúdo criado com sucesso";
+            } catch (Exception e) {
+                e.printStackTrace();
+                res.status(500);
+                return "Erro ao criar conteúdo: " + e.getMessage();
+            }
+        });
+
+        get("/conteudos", (req, res) -> {
+            Usuario usuario = req.session().attribute("usuario");
+            if (usuario == null) {
+                res.status(401);
+                return "Não autorizado";
+            }
+
+            String materiaIdStr = req.queryParams("materiaId");
+            if (materiaIdStr == null) {
+                res.status(400);
+                return "Parâmetro materiaId é obrigatório";
+            }
+
+            int materiaId = Integer.parseInt(materiaIdStr);
+
+            try (Connection conn = Conexao.getConexao()) {
+                ConteudoDAO dao = new ConteudoDAO(conn);
+                List<Conteudo> todos = dao.listarTodos();
+
+                // filtrar por matéria
+                List<Conteudo> filtrados = todos.stream()
+                    .filter(c -> c.getMateriaId() == materiaId)
+                    .toList();
+
+                res.type("application/json");
+                return new Gson().toJson(filtrados);
+            } catch (Exception e) {
+                e.printStackTrace();
+                res.status(500);
+                return "Erro ao buscar conteúdos: " + e.getMessage();
+            }
+        });
 
     }
 }

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Conteúdo da Matéria</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        #tituloMateria {
+            padding: 20px;
+            color: white;
+            text-align: center;
+            font-size: 24px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        #conteudoContainer {
+            padding: 20px;
+        }
+
+        .conteudo {
+            border-radius: 6px;
+            color: white;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .conteudo input[type="checkbox"] {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="tituloMateria">Carregando matéria...</div>
+
+    <div id="conteudoContainer">
+        <h3>Criar novo conteúdo</h3>
+        <form id="formConteudo">
+            <label>Título:</label><br>
+            <input type="text" id="titulo" name="titulo" required><br>
+
+            <label>Descrição:</label><br>
+            <textarea id="descricao" name="descricao"></textarea><br>
+
+            <label>Horas planejadas:</label><br>
+            <input type="number" id="horas" name="horas" min="1" required><br>
+
+            <label>Cor:</label><br>
+            <input type="color" id="cor" name="cor" value="#3366cc"><br><br>
+
+            <button type="submit">Criar Conteúdo</button>
+        </form>
+
+        <h3>Conteúdos cadastrados</h3>
+        <div id="listaConteudos"></div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+
+        if (!id) {
+            document.getElementById("tituloMateria").innerText = "ID da matéria não fornecido.";
+        } else {
+            fetch(`/materia?id=${id}`)
+                .then(resp => resp.json())
+                .then(materia => {
+                    const titulo = document.getElementById("tituloMateria");
+                    titulo.innerText = materia.nome;
+                    titulo.style.backgroundColor = materia.cor;
+                })
+                .catch(err => {
+                    document.getElementById("tituloMateria").innerText = "Erro ao carregar matéria.";
+                    console.error(err);
+                });
+
+            // Submissão do formulário
+            document.getElementById("formConteudo").addEventListener("submit", async function (e) {
+                e.preventDefault();
+
+                const formData = new URLSearchParams();
+                formData.append("titulo", document.getElementById("titulo").value);
+                formData.append("descricao", document.getElementById("descricao").value);
+                formData.append("horasPlanejadas", document.getElementById("horas").value);
+                formData.append("cor", document.getElementById("cor").value);
+                formData.append("materiaId", id);
+
+                const resp = await fetch("/criar-conteudo", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (resp.ok) {
+                    document.getElementById("formConteudo").reset();
+                    carregarConteudos();
+                } else {
+                    alert("Erro ao criar conteúdo.");
+                }
+            });
+
+            // Carregar conteúdos
+            async function carregarConteudos() {
+                const resp = await fetch(`/conteudos?materiaId=${id}`);
+                const lista = await resp.json();
+
+                console.log("Lista de conteúdos:", lista); // veja aqui o que vem no objeto
+
+                const container = document.getElementById("listaConteudos");
+                container.innerHTML = '';
+
+                lista.forEach(c => {
+                    console.log("Conteúdo cor:", c.cor); // verifique o valor do campo cor
+
+                    const div = document.createElement("div");
+                    div.className = "conteudo";
+
+                    // Se o nome do campo for outro, mude c.cor para o nome correto, ex: c.color, c.corConteudo etc.
+                    const corConteudo = c.cor && c.cor.trim() !== "" ? c.cor : "#444";
+                    div.style.backgroundColor = corConteudo;
+
+                    div.innerHTML = `<strong>${c.titulo}</strong><br>
+                                    Horas: ${c.horasPlanejadas}
+                                    <input type="checkbox" ${c.estudado ? "checked" : ""}> Estudado`;
+
+                    container.appendChild(div);
+                });
+            }
+
+
+            carregarConteudos();
+        }
+    </script>
+
+</body>
+</html>

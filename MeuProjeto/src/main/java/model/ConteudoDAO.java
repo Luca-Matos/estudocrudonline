@@ -12,13 +12,14 @@ public class ConteudoDAO {
     }
 
     public void adicionar(Conteudo conteudo) throws SQLException {
-        String sql = "INSERT INTO conteudo (nome, horas_estudar, status, materia_id, descricao) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO conteudo (nome, horas_estudar, status, materia_id, descricao, cor) VALUES (?, ?, ?, ?, ?,? )";
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, conteudo.getTitulo());
             stmt.setInt(2, conteudo.getHorasPlanejadas());
             stmt.setBoolean(3, conteudo.isEstudado());
             stmt.setInt(4, conteudo.getMateriaId());
             stmt.setString(5, conteudo.getDescricao());
+            stmt.setString(6, conteudo.getCor());
             stmt.executeUpdate();
     
             // Recuperar o ID gerado automaticamente
@@ -61,6 +62,7 @@ public class ConteudoDAO {
                 c.setHorasPlanejadas(rs.getInt("horas_estudar"));
                 c.setDescricao(rs.getString("descricao"));
                 c.setMateriaId(rs.getInt("materia_id"));
+                c.setCor(rs.getString("cor"));
                 lista.add(c);
             }
         }

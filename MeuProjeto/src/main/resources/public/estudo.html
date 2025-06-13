@@ -46,8 +46,14 @@
                 div.className = "materia";
                 div.style.backgroundColor = m.cor;
                 div.innerText = m.nome;
-                container.appendChild(div);
+
+                div.addEventListener("click", () => {
+                    window.location.href = `conteudo.html?id=${m.id}`;
             });
+
+    container.appendChild(div);
+});
+
         }
 
         // Envia nova matéria via fetch

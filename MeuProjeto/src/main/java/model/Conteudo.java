@@ -7,24 +7,34 @@ public class Conteudo {
     private int horasPlanejadas;
     private String descricao;
     private int materiaId;
-
-    public Conteudo() {}
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String desc) {
-        this.descricao = desc;
-    }
-
+    private String cor;
     
+        public Conteudo() {}
+    
+        public String getDescricao() {
+            return descricao;
+        }
+    
+        public void setDescricao(String desc) {
+            this.descricao = desc;
+        }
 
-    public Conteudo(String titulo, boolean estudado, int horasPlanejadas, String descricao, int materiaId) {
-        this.titulo = titulo;
-        this.estudado = estudado;
-        this.horasPlanejadas = horasPlanejadas;
-        this.materiaId = materiaId;
+        public String getCor() {
+            return cor;
+        }
+    
+        public void setCor(String cor) {
+            this.cor = cor;
+        }
+    
+        
+    
+        public Conteudo(String titulo, boolean estudado, int horasPlanejadas, String descricao, String cor, int materiaId) {
+            this.titulo = titulo;
+            this.estudado = estudado;
+            this.horasPlanejadas = horasPlanejadas;
+            this.materiaId = materiaId;
+            this.cor = cor;
     }
 
     public int getId() {
