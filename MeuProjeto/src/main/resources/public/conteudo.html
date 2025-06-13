@@ -24,12 +24,117 @@
         .conteudo {
             border-radius: 6px;
             color: white;
-            padding: 10px;
+            padding: 10px 10px 10px 15px;
             margin-bottom: 10px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .conteudo input[type="checkbox"] {
+        /* Estilo do checkbox personalizado circular */
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-radius: 50%;
+            background-color: transparent;
+            position: relative;
+            cursor: pointer;
             margin-left: 10px;
+            flex-shrink: 0;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .checkbox-wrapper input[type="checkbox"]:checked {
+            background-color: white;
+            border-color: white;
+        }
+
+        /* Símbolo de check usando ::after */
+        .checkbox-wrapper input[type="checkbox"]:checked::after {
+            content: "✔";
+            position: absolute;
+            top: 1px;
+            left: 4px;
+            font-size: 14px;
+            color: #3366cc; /* cor do check */
+        }
+
+        /* Estilos do pop-up */
+        #popupOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        #popupTitle {
+            margin-top: 0;
+        }
+
+        #popup {
+            background-color: #444;
+            border-radius: 8px;
+            padding: 20px;
+            width: 90%;
+            max-width: 300px;
+            max-height: 80vh;
+            overflow-y: auto;
+            color: white;
+            position: relative;
+            box-shadow: 0 0 10px #000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #popupClose {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            background: transparent;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+        }
+
+        #popupDescription {
+            margin-top: 10px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+                /* Estilo para telas maiores, como computadores */
+        @media (min-width: 768px) {
+            #popup {
+                width: 500px;
+                max-width: 90%;
+            }
+        }
+
+        /* Estilo para telas muito grandes (monitores grandes) */
+        @media (min-width: 1200px) {
+            #popup {
+                width: 600px;
+            }
         }
     </style>
 </head>
@@ -57,6 +162,15 @@
 
         <h3>Conteúdos cadastrados</h3>
         <div id="listaConteudos"></div>
+    </div>
+
+    <!-- Pop-up overlay -->
+    <div id="popupOverlay">
+        <div id="popup">
+            <button id="popupClose" aria-label="Fechar pop-up">×</button>
+            <h3 id="popupTitle"></h3>
+            <div id="popupDescription"></div>
+        </div>
     </div>
 
     <script>
@@ -102,34 +216,93 @@
                 }
             });
 
-            // Carregar conteúdos
+            // Pop-up elementos
+            const popupOverlay = document.getElementById("popupOverlay");
+            const popup = document.getElementById("popup");
+            const popupTitle = document.getElementById("popupTitle");
+            const popupDescription = document.getElementById("popupDescription");
+            const popupClose = document.getElementById("popupClose");
+
+            popupClose.addEventListener("click", () => {
+                popupOverlay.style.display = "none";
+            });
+
+            popupOverlay.addEventListener("click", (e) => {
+                if (e.target === popupOverlay) {
+                    popupOverlay.style.display = "none";
+                }
+            });
+
             async function carregarConteudos() {
                 const resp = await fetch(`/conteudos?materiaId=${id}`);
                 const lista = await resp.json();
-
-                console.log("Lista de conteúdos:", lista); // veja aqui o que vem no objeto
 
                 const container = document.getElementById("listaConteudos");
                 container.innerHTML = '';
 
                 lista.forEach(c => {
-                    console.log("Conteúdo cor:", c.cor); // verifique o valor do campo cor
-
                     const div = document.createElement("div");
                     div.className = "conteudo";
 
-                    // Se o nome do campo for outro, mude c.cor para o nome correto, ex: c.color, c.corConteudo etc.
                     const corConteudo = c.cor && c.cor.trim() !== "" ? c.cor : "#444";
                     div.style.backgroundColor = corConteudo;
 
-                    div.innerHTML = `<strong>${c.titulo}</strong><br>
-                                    Horas: ${c.horasPlanejadas}
-                                    <input type="checkbox" ${c.estudado ? "checked" : ""}> Estudado`;
+                    // Criar o conteúdo principal (título + horas)
+                    const textoDiv = document.createElement("div");
+                    textoDiv.innerHTML = `<strong>${c.titulo}</strong><br>Horas: ${c.horasPlanejadas}`;
+                    textoDiv.style.flexGrow = "1"; // para ocupar espaço e deixar checkbox à direita
+
+                    // Criar wrapper do checkbox
+                    const checkboxWrapper = document.createElement("label");
+                    checkboxWrapper.className = "checkbox-wrapper";
+                    checkboxWrapper.title = "Marcar como estudado";
+
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.checked = c.estudado ? true : false;
+
+                    checkboxWrapper.appendChild(checkbox);
+
+                    // Evitar que o clique no checkbox abra o pop-up
+                    checkbox.addEventListener("click", async (event) => {
+                        event.stopPropagation();
+
+                        // Atualizar status estudado no backend
+                        try {
+                            const formData = new URLSearchParams();
+                            formData.append("conteudoId", c.id);
+                            formData.append("estudado", checkbox.checked ? "true" : "false");
+
+                            const resp = await fetch("/atualizar-estudado", {
+                                method: "POST",
+                                body: formData
+                            });
+
+                            if (!resp.ok) {
+                                alert("Erro ao atualizar status estudado.");
+                                // Reverter checkbox em caso de erro
+                                checkbox.checked = !checkbox.checked;
+                            }
+                        } catch (err) {
+                            alert("Erro ao atualizar status estudado.");
+                            checkbox.checked = !checkbox.checked;
+                        }
+                    });
+
+                    // Clique no div principal abre o pop-up
+                    div.addEventListener("click", () => {
+                        popup.style.backgroundColor = corConteudo;
+                        popupTitle.innerText = c.titulo;
+                        popupDescription.innerText = c.descricao || "(Sem descrição)";
+                        popupOverlay.style.display = "flex";
+                    });
+
+                    div.appendChild(textoDiv);
+                    div.appendChild(checkboxWrapper);
 
                     container.appendChild(div);
                 });
             }
-
 
             carregarConteudos();
         }

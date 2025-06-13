@@ -228,5 +228,28 @@ public class App {
             }
         });
 
+        post("/atualizar-estudado", (req, res) -> {
+            try (Connection conn = Conexao.getConexao()) {
+                int conteudoId = Integer.parseInt(req.queryParams("conteudoId"));
+                boolean estudado = Boolean.parseBoolean(req.queryParams("estudado"));
+        
+                ConteudoDAO dao = new ConteudoDAO(conn);
+                boolean sucesso = dao.atualizarEstudado(conteudoId, estudado);
+        
+                if (sucesso) {
+                    res.status(200);
+                    return "Atualizado com sucesso";
+                } else {
+                    res.status(500);
+                    return "Erro ao atualizar";
+                }
+            } catch (Exception e) {
+                res.status(400);
+                return "Parâmetros inválidos: " + e.getMessage();
+            }
+        });
+        
+        
+
     }
 }

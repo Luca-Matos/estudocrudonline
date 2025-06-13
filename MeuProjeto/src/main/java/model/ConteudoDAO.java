@@ -98,6 +98,19 @@ public class ConteudoDAO {
         }
     }
     
+    public boolean atualizarEstudado(int conteudoId, boolean estudado) {
+        String sql = "UPDATE Conteudo SET status = ? WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setBoolean(1, estudado);
+            stmt.setInt(2, conteudoId);
+            int linhasAfetadas = stmt.executeUpdate();
+            return linhasAfetadas > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
     
 
     // Métodos para atualizar, deletar, etc, podem ser adicionados aqui
