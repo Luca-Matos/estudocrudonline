@@ -6,9 +6,8 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
-<!--luigi-->
 <body>
-  <!-- Ícone de voltar -->
+
 <div class="container2">
   <div class="div-titulo">
     <div id="tituloMateria">Carregando matéria...</div>
@@ -122,7 +121,9 @@
       .then(materia => {
         const titulo = document.getElementById("tituloMateria");
         titulo.innerText = materia.nome;
-        titulo.style.fontSize = "8vw";
+        titulo.style.fontSize = "7vw";
+        titulo.style.color = "#000";
+        titulo.style.fontWeight = "bold";
 
       });
 
@@ -212,6 +213,7 @@
         botaoEditar.title = "Editar conteúdo";
         botaoEditar.addEventListener("click", () => {
           // Abre um modal ou formulário para edição
+          event.stopPropagation();
           abrirFormularioEdicao(c); // Passa o conteúdo atual para edição
         });
 
