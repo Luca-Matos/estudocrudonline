@@ -72,33 +72,43 @@
   </div>
 </div>
 
+<!-- Modal de Edição -->
+<div id="modalEdicao" class="modal-edicao" aria-modal="true" role="dialog">
+  <div class="modal-edicao-content" id="modalEdicaoContent">
+    <div class="modal-edicao-header">
+      <span class="modal-edicao-titulo">Editar Conteúdo</span>
+      <span id="fecharModalEdicao" class="fechar-edicao" role="button" aria-label="Fechar edição">&times;</span>
+    </div>
+    <form id="formEdicao" class="form-edicao">
+      <input type="hidden" id="editarId" />
+      
+      <label for="editarTitulo">Título:</label>
+      <input type="text" id="editarTitulo" required />
+      
+      <label for="editarDescricao">Descrição:</label>
+      <textarea id="editarDescricao"></textarea>
+      
+      <label for="editarHoras">Horas planejadas:</label>
+      <input type="number" id="editarHoras" min="1" required />
+      
+      <button type="submit">Salvar</button>
+    </form>
+  </div>
+</div>
+
+
+
 <script>
 
-  function abrirFormularioEdicao(conteudo) {
-  const novoTitulo = prompt("Editar título:", conteudo.titulo);
-  const novaDescricao = prompt("Editar descrição:", conteudo.descricao);
-  const novasHoras = prompt("Editar horas planejadas:", conteudo.horasPlanejadas);
-
-  if (novoTitulo && novaDescricao && novasHoras) {
-    const formData = new URLSearchParams();
-    formData.append("id", conteudo.id);
-    formData.append("titulo", novoTitulo);
-    formData.append("descricao", novaDescricao);
-    formData.append("horasPlanejadas", novasHoras);
-
-    fetch("/editar-conteudo", {
-      method: "POST",
-      body: formData
-    }).then(resp => {
-      if (resp.ok) {
-        carregarConteudos();
-      } else {
-        alert("Erro ao editar conteúdo.");
-      }
-    });
-  }
-
+function abrirFormularioEdicao(conteudo) {
+  document.getElementById("editarId").value = conteudo.id;
+  document.getElementById("editarTitulo").value = conteudo.titulo;
+  document.getElementById("editarDescricao").value = conteudo.descricao;
+  document.getElementById("editarHoras").value = conteudo.horasPlanejadas;
+  document.getElementById("modalEdicao").classList.add("show");
 }
+
+
 
   function abrirPopupAdd() {
             document.getElementById("meuPopup").style.display = "flex";
@@ -217,7 +227,7 @@
           abrirFormularioEdicao(c); // Passa o conteúdo atual para edição
         });
 
-        div.appendChild(botaoEditar); // Adiciona depois do excluir
+         
 
         // Botão de exclusão (X)
         const botaoExcluir = document.createElement("button");
@@ -245,6 +255,7 @@
 
         div.appendChild(textoDiv);
         div.appendChild(label);
+        div.appendChild(botaoEditar);
         div.appendChild(botaoExcluir);
 
         container.appendChild(div);
@@ -285,6 +296,39 @@
     }
 
     carregarConteudos();
+
+    document.getElementById("fecharModalEdicao").addEventListener("click", () => {
+    document.getElementById("modalEdicao").classList.remove("show");
+  });
+
+  document.getElementById("modalEdicao").addEventListener("click", (e) => {
+    if (e.target === document.getElementById("modalEdicao")) {
+      document.getElementById("modalEdicao").classList.remove("show");
+    }
+  });
+
+  document.getElementById("formEdicao").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const formData = new URLSearchParams();
+    formData.append("id", document.getElementById("editarId").value);
+    formData.append("titulo", document.getElementById("editarTitulo").value);
+    formData.append("descricao", document.getElementById("editarDescricao").value);
+    formData.append("horasPlanejadas", document.getElementById("editarHoras").value);
+
+    const resp = await fetch("/editar-conteudo", {
+      method: "POST",
+      body: formData
+    });
+
+    if (resp.ok) {
+      document.getElementById("modalEdicao").classList.remove("show");
+      await carregarConteudos();
+    } else {
+      alert("Erro ao editar conteúdo.");
+    }
+});
+
 
     // Fecha o modal quando clicar no "x"
     document.getElementById("fecharModal").addEventListener("click", () => {
