@@ -1,4 +1,5 @@
 utils\Conexao.class
+model\Resumo.class
 model\ConteudoDAO.class
 model\ResumoDAO.class
 model\Conteudo.class

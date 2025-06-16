@@ -31,27 +31,13 @@ public class App {
             return null;
         });
 
-        // Redireciona para login.html
-        get("/login", (req, res) -> {
-            System.out.println("Rota /login acessada");
-            res.redirect("/login.html");
-            return null;
-        });
-
-        // Redireciona para register.html
-        get("/register", (req, res) -> {
-            System.out.println("Rota /register acessada");
-            res.redirect("/register.html");
-            return null;
-        });
-
         post("/register", (req, res) -> {
             try (Connection conn = Conexao.getConexao()) {
                 UsuarioDAO dao = new UsuarioDAO(conn);
                 Usuario u = new Usuario(req.queryParams("nome"), req.queryParams("email"), req.queryParams("senha"));
                 dao.inserir(u);
                 System.out.println("Usuário registrado: " + u.getEmail());
-                res.redirect("/login");
+                res.redirect("/index");
             } catch (Exception e) {
                 e.printStackTrace();
                 res.status(500);
@@ -158,6 +144,31 @@ public class App {
                 return new Gson().toJson(m);
             }
         });
+
+        post("/editar-materia", (req, res) -> {
+            Usuario usuario = req.session().attribute("usuario");
+            if (usuario == null) {
+                res.status(401);
+                return "Usuário não autenticado.";
+            }
+        
+            try (Connection conn = Conexao.getConexao()) {
+                MateriaDAO dao = new MateriaDAO(conn);
+        
+                // Parse do JSON
+                Gson gson = new Gson();
+                Materia materia = gson.fromJson(req.body(), Materia.class);
+        
+                dao.editar(materia);
+        
+                res.status(200);
+                return "Matéria editada com sucesso.";
+            } catch (Exception e) {
+                res.status(500);
+                return "Erro ao editar matéria: " + e.getMessage();
+            }
+        });
+        
         
         // conteudos
 

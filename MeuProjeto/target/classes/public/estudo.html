@@ -42,6 +42,19 @@
             </div>
         </div>
 
+        <div id="popupEditar" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border: 1px solid #ccc; border-radius: 5px;">
+            <h3>Editar Matéria</h3>
+            <form id="formEditarMateria">
+                <input type="hidden" id="editarId">
+                <label for="editarNome">Nome:</label>
+                <input type="text" id="editarNome" name="nome"><br>
+                <label for="editarCor">Cor:</label>
+                <input type="color" id="editarCor" name="cor"><br>
+                <button type="button" onclick="salvarEdicao()">Salvar</button>
+                <button type="button" onclick="fecharPopupEditar()">Cancelar</button>
+            </form>
+        </div>
+
 
 <!--
     <h2>Criar Matéria</h2>
@@ -74,28 +87,75 @@
             document.getElementById("meuPopup2").style.display = "none";
         }
 
-        // Carrega todas as matérias
-        async function carregarMaterias() {
-            const resp = await fetch('/materias');
-            const materias = await resp.json();
+        function abrirPopupEditar(materia) {
+        document.getElementById('popupEditar').style.display = 'block';
+        document.getElementById('editarId').value = materia.id;
+        document.getElementById('editarNome').value = materia.nome;
+        document.getElementById('editarCor').value = materia.cor;
+}
 
-            const container = document.getElementById("materiasContainer");
-            container.innerHTML = ''; // limpa
+        function fecharPopupEditar() {
+            document.getElementById('popupEditar').style.display = 'none';
+        }
 
-            materias.forEach(m => {
-                const div = document.createElement("div");
-                div.className = "materia";
-                div.style.backgroundColor = m.cor;
-                div.innerText = m.nome;
+        async function salvarEdicao() {
+            const id = document.getElementById('editarId').value;
+            const nome = document.getElementById('editarNome').value;
+            const cor = document.getElementById('editarCor').value;
 
-                div.addEventListener("click", () => {
-                    window.location.href = `conteudo.html?id=${m.id}`;
+            const resp = await fetch(`/editar-materia`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, nome, cor })
             });
 
-    container.appendChild(div);
-});
+            if (resp.ok) {
+                fecharPopupEditar();
+                carregarMaterias(); // Atualiza a lista de matérias
+            } else {
+                alert('Erro ao salvar alterações.');
+            }
+}
 
-        }
+        // Carrega todas as matérias
+        async function carregarMaterias() {
+    const resp = await fetch('/materias');
+    const materias = await resp.json();
+
+    const container = document.getElementById("materiasContainer");
+    container.innerHTML = ''; // limpa
+
+    materias.forEach(m => {
+        const materiaDiv = document.createElement('div');
+        materiaDiv.className = 'materia';
+        materiaDiv.style.position = 'relative';
+        materiaDiv.style.backgroundColor = m.cor;
+        materiaDiv.style.padding = '10px';
+        materiaDiv.style.borderRadius = '5px';
+        materiaDiv.style.margin = '5px';
+        materiaDiv.style.cursor = 'pointer';
+
+        materiaDiv.innerHTML = `
+            <span>${m.nome}</span>
+            <span class="editar-icon" style="position: absolute; top: 5px; right: 5px; cursor: pointer;">
+                ✏️
+            </span>
+        `;
+
+        materiaDiv.addEventListener('click', () => {
+            window.location.href = `conteudo.html?materiaId=${m.id}`;
+        });
+
+        const editarIcon = materiaDiv.querySelector('.editar-icon');
+        editarIcon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            abrirPopupEditar(m);
+        });
+
+        container.appendChild(materiaDiv);
+    });
+}
+
 
         // Envia nova matéria via fetch
         document.getElementById("formMateria").addEventListener("submit", async function (e) {
