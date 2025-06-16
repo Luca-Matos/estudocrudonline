@@ -29,23 +29,6 @@ public class MateriaDAO {
             throw new SQLException("Erro ao adicionar matéria: " + e.getMessage());
         }
     }
-    
-
-    public List<Materia> listarTodas() throws SQLException {
-        List<Materia> lista = new ArrayList<>();
-        String sql = "SELECT * FROM materia";
-        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                Materia m = new Materia();
-                m.setId(rs.getInt("id"));
-                m.setNome(rs.getString("nome"));
-                m.setCor(rs.getString("cor"));
-                lista.add(m);
-            }
-        }
-        return lista;
-    }
 
     public Materia buscarPorId(int id) throws SQLException {
         String sql = "SELECT * FROM materia WHERE id = ?";
@@ -87,6 +70,16 @@ public class MateriaDAO {
             }
         }
         return lista;
+    }
+
+    public void editar(Materia materia) throws SQLException {
+        String sql = "UPDATE materia SET nome = ?, cor = ? WHERE id = ?";
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setString(1, materia.getNome());
+            stmt.setString(2, materia.getCor());
+            stmt.setInt(3, materia.getId());
+            stmt.executeUpdate();
+        }
     }
     
 

@@ -5,15 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConteudoDAO {
-    private Connection connection;
+    private Connection conexao;
 
-    public ConteudoDAO(Connection connection) {
-        this.connection = connection;
+    public ConteudoDAO(Connection conexao) {
+        this.conexao = conexao;
     }
 
     public void adicionar(Conteudo conteudo) throws SQLException {
         String sql = "INSERT INTO conteudo (nome, horas_estudar, status, materia_id, descricao, cor) VALUES (?, ?, ?, ?, ?,? )";
-        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement stmt = conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, conteudo.getTitulo());
             stmt.setInt(2, conteudo.getHorasPlanejadas());
             stmt.setBoolean(3, conteudo.isEstudado());
@@ -32,7 +32,7 @@ public class ConteudoDAO {
 
     public Conteudo buscarPorId(int id) throws SQLException {
         String sql = "SELECT * FROM conteudo WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -52,7 +52,7 @@ public class ConteudoDAO {
     public List<Conteudo> listarTodos() throws SQLException {
         String sql = "SELECT * FROM conteudo";
         List<Conteudo> lista = new ArrayList<>();
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Conteudo c = new Conteudo();
@@ -71,7 +71,7 @@ public class ConteudoDAO {
 
     public void deletar(int id) throws SQLException {
         String sql = "DELETE FROM conteudo WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
         }
@@ -80,7 +80,7 @@ public class ConteudoDAO {
     public void salvarResultadoEExcluir(int conteudoId) throws SQLException {
         // Buscar os dados do conteúdo antes de excluir
         String selectSql = "SELECT * FROM conteudo WHERE id = ?";
-        try (PreparedStatement selectStmt = connection.prepareStatement(selectSql)) {
+        try (PreparedStatement selectStmt = conexao.prepareStatement(selectSql)) {
             selectStmt.setInt(1, conteudoId);
             ResultSet rs = selectStmt.executeQuery();
             if (rs.next()) {
@@ -89,9 +89,9 @@ public class ConteudoDAO {
                 int materiaId = rs.getInt("materia_id");
     
                 // Salva no resumo
-                ResumoDAO resumoDAO = new ResumoDAO(connection);
-                resumoDAO.salvarResumo(materiaId, titulo, horas);
-    
+                Resumo resumo = new Resumo(materiaId, titulo, horas);
+                ResumoDAO resumoDAO = new ResumoDAO(conexao);
+                resumoDAO.salvarResumo(resumo);
                 // Deleta o conteúdo
                 deletar(conteudoId);
             }
@@ -100,7 +100,7 @@ public class ConteudoDAO {
     
     public boolean atualizarEstudado(int conteudoId, boolean estudado) {
         String sql = "UPDATE Conteudo SET status = ? WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setBoolean(1, estudado);
             stmt.setInt(2, conteudoId);
             int linhasAfetadas = stmt.executeUpdate();
