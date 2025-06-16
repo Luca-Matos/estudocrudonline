@@ -5,15 +5,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MateriaDAO {
-    private Connection connection;
+    private Connection conexao;
 
-    public MateriaDAO(Connection connection) {
-        this.connection = connection;
+    public MateriaDAO(Connection conexao) {
+        this.conexao = conexao;
     }
 
     public void adicionar(Materia materia) throws SQLException {
         String sql = "INSERT INTO materia (nome, cor, usuario_id) VALUES (?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement stmt = conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, materia.getNome());
             stmt.setString(2, materia.getCor());
             stmt.setInt(3, materia.getUsuarioId()); // Certifique-se de que o objeto Materia tem o usuarioId definido
@@ -34,7 +34,7 @@ public class MateriaDAO {
     public List<Materia> listarTodas() throws SQLException {
         List<Materia> lista = new ArrayList<>();
         String sql = "SELECT * FROM materia";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 Materia m = new Materia();
@@ -49,7 +49,7 @@ public class MateriaDAO {
 
     public Materia buscarPorId(int id) throws SQLException {
         String sql = "SELECT * FROM materia WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -65,7 +65,7 @@ public class MateriaDAO {
 
     public void deletar(int id) throws SQLException {
         String sql = "DELETE FROM materia WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
         }
@@ -74,7 +74,7 @@ public class MateriaDAO {
     public List<Materia> listarPorUsuario(int usuarioId) throws SQLException {
         List<Materia> lista = new ArrayList<>();
         String sql = "SELECT * FROM materia WHERE usuario_id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setInt(1, usuarioId);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
