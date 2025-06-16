@@ -1,23 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>EstudoApp</title>
+    <title>OPlano</title>
     <meta charset="UTF-8">
-    <style>
-        .materia {
-            display: inline-block;
-            padding: 10px;
-            margin: 10px;
-            color: white;
-            border-radius: 8px;
-            min-width: 100px;
-            text-align: center;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>EstudoApp</h1>
 
+    <div class="container2">
+        <div class="div-titulo">
+            <h1>Plano</h1>
+            <h2 class="subtitle">de Estudos</h2>
+        </div>
+        <div class="botoes">
+            <div class="botao" onclick="abrirPopupAdd()">Adicionar matéria</div>
+            <div class="botao">Remover matéria</div>
+        </div>
+            
+        <div id="materiasContainer" class="grade"></div>
+
+        <img class="icone-dir" src="images/usuario.png" alt="Usuário" />
+    </div>
+
+    <div class="popup" id="meuPopup">
+            <div class="popup-criar-materia">
+                <h2 style="margin-top: -10px;">Criar Matéria</h2>
+                <form id="formMateria" class="form-materia">
+                    <label for="nome">Nome da matéria:</label>
+                    <input type="text" id="nome" name="nome" required><br>
+
+                    <div style="margin-top: 4px; padding-right: 23px;">
+                        <label for="cor">Cor:</label>
+                        <input type="color" id="cor" name="cor" value="#ff0000"><br>
+                    </div>
+
+                    <button type="submit" class="btn-entrar" style="margin-top: 10px;">Criar Matéria</button>
+                </form>
+                <button class="btn-fechar" onclick="fecharPopupAdd()">Fechar</button>
+            </div>
+        </div>
+
+
+<!--
     <h2>Criar Matéria</h2>
     <form id="formMateria">
         <label for="nome">Nome da matéria:</label>
@@ -31,8 +57,23 @@
 
     <h2>Suas matérias:</h2>
     <div id="materiasContainer"></div>
+-->
 
     <script>
+
+        function abrirPopupAdd() {
+            document.getElementById("meuPopup").style.display = "flex";
+        }
+        function abrirPopupRemover() {
+            document.getElementById("meuPopup2").style.display = "flex";
+        }
+        function fecharPopupAdd() {
+            document.getElementById("meuPopup").style.display = "none";
+        }
+        function fecharPopupRemover() {
+            document.getElementById("meuPopup2").style.display = "none";
+        }
+
         // Carrega todas as matérias
         async function carregarMaterias() {
             const resp = await fetch('/materias');

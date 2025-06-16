@@ -1,8 +1,64 @@
 <!DOCTYPE html>
 <html>
-<head><title>Bem-vindo</title></head>
+<head>
+    <title>OPlano</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap">
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
-    <h1>Bem-vindo ao EstudoApp</h1>
-    <a href="/login">Login</a> | <a href="/register">Registrar</a>
+    <div class="container">
+        <h1 class="subtitulo container">Bem-vindo ao <span style="color: #921dff; font-weight: bold;">Plano</span></h1>
+        <div class="txt">
+            <button class="btn-login" onclick="abrirPopupLogin()">
+                <span class="subtitulo2">Login</span>
+            </button>
+            <button class="btn-login" onclick="abrirPopupRegistrar()">
+                <span class="subtitulo2">Registrar</span>
+            </button>
+        </div>
+
+        <div class="popup" id="meuPopup">
+            <div class="popup-conteudo">
+                <h2 style="margin-top: -10px;">Login</h2>
+                <form action="/login" method="post">
+                    &nbsp Email: <input type="email" name="email"><br>
+                    Senha:&nbsp<input type="password" name="senha"><br>
+                    <button type="submit" class="btn-entrar">Entrar</button>
+                </form>
+                <button class="btn-fechar" onclick="fecharPopupLogin()">Fechar</button>
+            </div>
+        </div>
+
+        <div class="popup" id="meuPopup2">
+            <div class="popup-conteudo">
+                <h2 style="margin-top: -10px;">Registrar</h2>
+                    <form action="/register" method="post">
+                        Nome: <input type="text" name="nome"><br>
+                        &nbspEmail: <input type="email" name="email"><br>
+                        Senha: <input type="password" name="senha"><br>
+                        <button type="submit" class="btn-entrar">Registrar</button>
+                    </form>
+                <button class="btn-fechar" onclick="fecharPopupRegistrar()">Fechar</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function abrirPopupLogin() {
+            document.getElementById("meuPopup").style.display = "flex";
+        }
+        function abrirPopupRegistrar() {
+            document.getElementById("meuPopup2").style.display = "flex";
+        }
+        function fecharPopupLogin() {
+            document.getElementById("meuPopup").style.display = "none";
+        }
+        function fecharPopupRegistrar() {
+            document.getElementById("meuPopup2").style.display = "none";
+        }
+    </script>
 </body>
 </html>
