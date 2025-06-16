@@ -1,6 +1,10 @@
 package model;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,8 +114,17 @@ public class ConteudoDAO {
             return false;
         }
     }
-    
-    
+
+    public void atualizar(Conteudo conteudo) throws SQLException {
+        String sql = "UPDATE conteudo SET nome = ?, descricao = ?, horas_estudar = ? WHERE id = ?";
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setString(1, conteudo.getTitulo());
+            stmt.setString(2, conteudo.getDescricao());
+            stmt.setInt(3, conteudo.getHorasPlanejadas());
+            stmt.setInt(4, conteudo.getId());
+            stmt.executeUpdate();
+    }
+}
 
     // Métodos para atualizar, deletar, etc, podem ser adicionados aqui
 }

@@ -8,22 +8,43 @@
 </head>
 <body>
 
-<div id="tituloMateria">Carregando matéria...</div>
+<div class="container2">
+  <div class="div-titulo">
+    <div id="tituloMateria">Carregando matéria...</div>
+  </div>
 
-<div id="conteudoContainer">
 
-  <form id="formConteudo">
-    <h3>Criar novo conteúdo</h3>
-    <label>Título:</label><br>
-    <input type="text" id="titulo" name="titulo" required><br>
-    <label>Descrição:</label><br>
-    <textarea id="descricao" name="descricao"></textarea><br>
-    <label>Horas planejadas:</label><br>
-    <input type="number" id="horas" name="horas" min="1" required><br>
-    <label>Cor:</label><br>
-    <input type="color" id="cor" name="cor" value="#3366cc"><br><br>
-    <button type="submit">Criar Conteúdo</button>
-  </form>
+  <div id="conteudoContainer" class="grade">
+      
+  </div>
+
+  <div class="botoes">
+    <div class="botao" onclick="abrirPopupAdd()">Adicionar Conteúdo</div>
+  </div>
+
+    <div class="popup" id="meuPopup">
+      <div class="popup-criar-materia">
+        <form id="formConteudo">
+          <h3>Novo conteúdo</h3>
+
+          <label>Título:</label><br>
+          <input type="text" id="titulo" name="titulo" required><br>
+
+          <label>Descrição:</label><br>
+          <textarea id="descricao" name="descricao"></textarea><br>
+
+          <label>Horas planejadas:</label><br>
+          <input type="number" id="horas" name="horas" min="1" required><br>
+
+          <label>Cor:</label><br>
+          <input type="color" id="cor" name="cor" value="#3366cc"><br><br>
+
+          <button type="submit">Criar Conteúdo</button>
+        </form>
+                <button class="btn-fechar" onclick="fecharPopupAdd()">Fechar</button>
+      </div>
+    </div>
+
 
   <div id="layoutConteudos">
     <div id="listaConteudos"></div>
@@ -32,7 +53,11 @@
     </div>
   </div>
 
+  </div>
+  <img class="icone-dir" src="images/usuario.png" alt="Usuário" />
+
 </div>
+
 
 <!-- Modal para descrição -->
 <div id="modalDescricao" class="modal" aria-modal="true" role="dialog" aria-labelledby="modalTitulo" aria-describedby="modalTexto">
@@ -48,6 +73,41 @@
 </div>
 
 <script>
+
+  function abrirFormularioEdicao(conteudo) {
+  const novoTitulo = prompt("Editar título:", conteudo.titulo);
+  const novaDescricao = prompt("Editar descrição:", conteudo.descricao);
+  const novasHoras = prompt("Editar horas planejadas:", conteudo.horasPlanejadas);
+
+  if (novoTitulo && novaDescricao && novasHoras) {
+    const formData = new URLSearchParams();
+    formData.append("id", conteudo.id);
+    formData.append("titulo", novoTitulo);
+    formData.append("descricao", novaDescricao);
+    formData.append("horasPlanejadas", novasHoras);
+
+    fetch("/editar-conteudo", {
+      method: "POST",
+      body: formData
+    }).then(resp => {
+      if (resp.ok) {
+        carregarConteudos();
+      } else {
+        alert("Erro ao editar conteúdo.");
+      }
+    });
+  }
+
+}
+
+  function abrirPopupAdd() {
+            document.getElementById("meuPopup").style.display = "flex";
+        }
+        function fecharPopupAdd() {
+            document.getElementById("meuPopup").style.display = "none";
+        }
+
+
   const params = new URLSearchParams(window.location.search);
   const id = params.get("materiaId");
 
@@ -61,7 +121,8 @@
       .then(materia => {
         const titulo = document.getElementById("tituloMateria");
         titulo.innerText = materia.nome;
-        titulo.style.backgroundColor = materia.cor;
+        titulo.style.fontSize = "8vw";
+
       });
 
     document.getElementById("formConteudo").addEventListener("submit", async function (e) {
@@ -101,7 +162,14 @@
         const div = document.createElement("div");
         div.className = "conteudo";
         div.style.backgroundColor = c.cor || "#444";
-
+        div.style.paddingTop = '0.8vw';
+        div.style.paddingInline = '17vw';
+        div.style.borderRadius = '0.4px';
+        div.style.boxShadow = "0px 4px 4px rgba(0, 0, 0, 1)";
+        div.style.borderRadius = "60px";
+        div.style.outline = "5px white solid";
+        div.style.marginBottom = "1vw";
+        
         const textoDiv = document.createElement("div");
         textoDiv.innerHTML = `<strong>${c.titulo}</strong><br>Horas: ${c.horasPlanejadas}`;
         textoDiv.style.flexGrow = "1";
@@ -136,8 +204,45 @@
         label.className = "checkbox-wrapper";
         label.appendChild(checkbox);
 
+        // Botão de edição (✏️)
+        const botaoEditar = document.createElement("button");
+        botaoEditar.innerText = "✏️";
+        botaoEditar.className = "botao-editar";
+        botaoEditar.title = "Editar conteúdo";
+        botaoEditar.addEventListener("click", () => {
+          // Abre um modal ou formulário para edição
+          abrirFormularioEdicao(c); // Passa o conteúdo atual para edição
+        });
+
+        div.appendChild(botaoEditar); // Adiciona depois do excluir
+
+        // Botão de exclusão (X)
+        const botaoExcluir = document.createElement("button");
+        botaoExcluir.innerText = "✕";
+        botaoExcluir.className = "botao-excluir";
+        botaoExcluir.title = "Concluir e excluir";
+        botaoExcluir.addEventListener("click", async (event) => {
+          event.stopPropagation();
+
+          const confirmacao = confirm("Tem certeza que deseja marcar como concluído e excluir esse conteúdo?");
+          if (confirmacao) {
+            const formData = new URLSearchParams();
+            formData.append("conteudoId", c.id);
+            const resp = await fetch("/salvar-resultado-e-excluir", {
+              method: "POST",
+              body: formData
+            });
+            if (resp.ok) {
+              carregarConteudos();
+            } else {
+              alert("Erro ao concluir conteúdo.");
+            }
+          }
+        });
+
         div.appendChild(textoDiv);
         div.appendChild(label);
+        div.appendChild(botaoExcluir);
 
         container.appendChild(div);
 

@@ -1,17 +1,21 @@
 package controller;
 
 import java.sql.Connection;
-import com.google.gson.Gson;
 import java.util.List;
-import static spark.Spark.*;
-import spark.ModelAndView;
+
+import com.google.gson.Gson;
+
 import model.Conteudo;
 import model.ConteudoDAO;
 import model.Materia;
 import model.MateriaDAO;
-import model.ResumoDAO;
 import model.Usuario;
 import model.UsuarioDAO;
+import static spark.Spark.after;
+import static spark.Spark.get;
+import static spark.Spark.port;
+import static spark.Spark.post;
+import static spark.Spark.staticFiles;
 import utils.Conexao;
 
 public class App {
@@ -274,9 +278,26 @@ public class App {
                 return "Erro nos parâmetros ou na execução: " + e.getMessage();
             }
         });
-        
-        
-        
+
+        post("/editar-conteudo", (req, res) -> {
+            int id = Integer.parseInt(req.queryParams("id"));
+            String titulo = req.queryParams("titulo");
+            String descricao = req.queryParams("descricao");
+            int horas = Integer.parseInt(req.queryParams("horasPlanejadas"));
+
+            ConteudoDAO dao = new ConteudoDAO(Conexao.getConexao());
+            Conteudo c = dao.buscarPorId(id);
+            if (c != null) {
+                c.setTitulo(titulo);
+                c.setDescricao(descricao);
+                c.setHorasPlanejadas(horas);
+                dao.atualizar(c);
+                return "OK";
+            }
+            res.status(404);
+            return "Conteúdo não encontrado.";
+        });
+    
 
     }
 }
