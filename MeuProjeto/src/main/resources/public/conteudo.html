@@ -19,7 +19,9 @@
   </div>
 
   <div class="botoes">
-    <div class="botao" onclick="abrirPopupAdd()">Adicionar Conteúdo</div>
+    <div style="margin-top: -190px; margin-bottom: -100px;" class="botao">Voltar</div>
+     
+    <div style="margin-top: -190px; margin-bottom: -100px;" class="botao" onclick="abrirPopupAdd()">Adicionar Conteúdo</div> 
   </div>
 
     <div class="popup" id="meuPopup">
@@ -52,14 +54,13 @@
       <canvas id="graficoEstudo" height="200"></canvas>
     </div>
   </div>
-
-  </div>
+  
   <img class="icone-dir" src="images/usuario.png" alt="Usuário" />
 
 </div>
 
 
-<!-- Modal para descrição -->
+
 <div id="modalDescricao" class="modal" aria-modal="true" role="dialog" aria-labelledby="modalTitulo" aria-describedby="modalTexto">
   <div class="modal-content" id="modalContent">
     <div class="modal-header">
@@ -72,7 +73,7 @@
   </div>
 </div>
 
-<!-- Modal de Edição -->
+
 <div id="modalEdicao" class="modal-edicao" aria-modal="true" role="dialog">
   <div class="modal-edicao-content" id="modalEdicaoContent">
     <div class="modal-edicao-header">
@@ -175,7 +176,7 @@ function abrirFormularioEdicao(conteudo) {
         div.className = "conteudo";
         div.style.backgroundColor = c.cor || "#444";
         div.style.paddingTop = '0.8vw';
-        div.style.paddingInline = '17vw';
+        div.style.paddingInline = '16vw';
         div.style.borderRadius = '0.4px';
         div.style.boxShadow = "0px 4px 4px rgba(0, 0, 0, 1)";
         div.style.borderRadius = "60px";
@@ -185,8 +186,17 @@ function abrirFormularioEdicao(conteudo) {
         const textoDiv = document.createElement("div");
         textoDiv.innerHTML = `<strong>${c.titulo}</strong><br>Horas: ${c.horasPlanejadas}`;
         textoDiv.style.flexGrow = "1";
+        textoDiv.style.marginLeft = "-13vw";
+        textoDiv.style.textShadow =
+        `
+          -1px -1px 0 black,
+          1px -1px 0 black,
+          -1px  1px 0 black,
+          1px  1px 0 black`;
+        textoDiv.style.marginTop = "-0.3vw";
 
-        // Ao clicar no conteúdo, abre o modal com título, descrição e cor do conteúdo
+
+
         div.addEventListener("click", () => {
           const modal = document.getElementById("modalDescricao");
           const modalContent = document.getElementById("modalContent");
@@ -216,20 +226,18 @@ function abrirFormularioEdicao(conteudo) {
         label.className = "checkbox-wrapper";
         label.appendChild(checkbox);
 
-        // Botão de edição (✏️)
+
         const botaoEditar = document.createElement("button");
         botaoEditar.innerText = "✏️";
         botaoEditar.className = "botao-editar";
         botaoEditar.title = "Editar conteúdo";
         botaoEditar.addEventListener("click", () => {
-          // Abre um modal ou formulário para edição
+          
           event.stopPropagation();
-          abrirFormularioEdicao(c); // Passa o conteúdo atual para edição
+          abrirFormularioEdicao(c); 
         });
 
          
-
-        // Botão de exclusão (X)
         const botaoExcluir = document.createElement("button");
         botaoExcluir.innerText = "✕";
         botaoExcluir.className = "botao-excluir";
@@ -253,10 +261,17 @@ function abrirFormularioEdicao(conteudo) {
           }
         });
 
+        const juntarBotoes = document.createElement("div");
+        juntarBotoes.appendChild(label);
+        juntarBotoes.appendChild(botaoEditar);
+        juntarBotoes.appendChild(botaoExcluir);
+
         div.appendChild(textoDiv);
-        div.appendChild(label);
-        div.appendChild(botaoEditar);
-        div.appendChild(botaoExcluir);
+        div.appendChild(juntarBotoes);
+        juntarBotoes.style.display = "flex";
+        juntarBotoes.style.justifyContent = "space-between";
+
+        juntarBotoes.style.marginRight = "-13vw";
 
         container.appendChild(div);
 
@@ -330,12 +345,10 @@ function abrirFormularioEdicao(conteudo) {
 });
 
 
-    // Fecha o modal quando clicar no "x"
     document.getElementById("fecharModal").addEventListener("click", () => {
       document.getElementById("modalDescricao").classList.remove("show");
     });
 
-    // Fecha o modal quando clicar fora da caixa de conteúdo
     document.getElementById("modalDescricao").addEventListener("click", (e) => {
       if(e.target === document.getElementById("modalDescricao")){
         document.getElementById("modalDescricao").classList.remove("show");

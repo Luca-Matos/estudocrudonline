@@ -96,7 +96,7 @@ public class ConteudoDAO {
                 Resumo resumo = new Resumo(materiaId, titulo, horas);
                 ResumoDAO resumoDAO = new ResumoDAO(conexao);
                 resumoDAO.salvarResumo(resumo);
-                // Deleta o conteúdo
+                
                 deletar(conteudoId);
             }
         }
@@ -126,5 +126,4 @@ public class ConteudoDAO {
     }
 }
 
-    // Métodos para atualizar, deletar, etc, podem ser adicionados aqui
 }

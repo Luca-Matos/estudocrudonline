@@ -1,10 +1,10 @@
 package model;
 
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-
-import model.Usuario;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class UsuarioDAO {
     
@@ -28,7 +28,7 @@ public class UsuarioDAO {
             try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
                     int idGerado = rs.getInt(1);
-                    usuario.setId(idGerado);  // Certifique-se que sua classe Usuario tenha o método setId(int)
+                    usuario.setId(idGerado);  
                 }
             }
         } catch (SQLException e) {
@@ -55,7 +55,4 @@ public class UsuarioDAO {
         return null;
     }
     
-    
-
-    // você pode adicionar métodos como buscarPorEmailSenha(), atualizar(), deletar(), etc.
 }

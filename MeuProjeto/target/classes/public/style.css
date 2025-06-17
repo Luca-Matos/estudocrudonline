@@ -27,13 +27,13 @@ body {
 
     /* Estilo do popup */
     .popup {
-      display: none; /* Oculto por padrão */
+      display: none; 
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0, 0, 0, 0.5); /* Fundo escuro */
+      background-color: rgba(0, 0, 0, 0.5); 
       justify-content: center;
       align-items: center;
       box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
@@ -214,15 +214,30 @@ body {
       cursor: pointer;
     }
 
+    .voltar-tela{
+      width: 32px;
+      height: 32px;
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      cursor: pointer;
+    }
+
     @media (max-width: 768px) {
       .div-titulo h1 {
         font-size: 12vw;
+      }
+
+      .botoes {
+        margin-top: -25px;
+        margin-bottom: -20px;
       }
 
       .subtitulo {
         font-size: 8vw;
       }
     }
+
 
 .container {
     display: flex;
@@ -305,12 +320,38 @@ body {
 #graficoWrapper {
     width: 100%;
 }
-    
+
+#modalDescricao .modal-content {
+  width: 30rem;
+  height: 15rem;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#modalDescricao .modal-body {
+  margin-top: -1vw;;
+  max-height: 100px; 
+  max-width: 450px;
+  overflow-y: auto;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px;
+  box-sizing: border-box;
+  min-height: 0;
+}
 
 @media (min-width: 900px) {
     #layoutConteudos {
         flex-direction: row;
         align-items: flex-start;
+    }
+
+    .graficoWhapper {
+        background-color: #000000;
     }
 
     #listaConteudos {
@@ -323,6 +364,7 @@ body {
         margin-left: 20px;
         margin-top: -5rem;
     }
+
 }
 
 .conteudo {
@@ -332,7 +374,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    cursor: pointer; /* Indica que é clicável para abrir descrição */
+    cursor: pointer; 
 }
 
 .checkbox-wrapper {
@@ -372,7 +414,10 @@ canvas {
 
 /* Modal */
 .modal {
+    word-break: break-word; 
+    white-space: pre-line;
     position: fixed;
+    margin-top: -20px;
     top: 0;
     left: 0;
     width: 100%;
@@ -403,6 +448,11 @@ canvas {
     transform: scale(0.8);
     transition: transform 0.3s ease, background-color 0.3s ease;
     color: white;
+    text-shadow:
+  -1px -1px 0 black,
+   1px -1px 0 black,
+  -1px  1px 0 black,
+   1px  1px 0 black;
 }
 
 .modal.show .modal-content {
@@ -423,11 +473,13 @@ canvas {
     font-weight: bold;
     cursor: pointer;
     user-select: none;
+    z-index: 10;
 }
 
 .modal-body {
     white-space: pre-wrap;
     font-size: 1rem;
+    margin-top: -50px;
 }
 
 .modal-edicao {

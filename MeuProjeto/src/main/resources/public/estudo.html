@@ -17,6 +17,7 @@
         <div class="botoes">
             <div class="botao" onclick="abrirPopupAdd()">Adicionar matéria</div>
             <div class="botao">Remover matéria</div>
+            <div class="botao">&nbsp&nbspVer resultados&nbsp&nbsp</div>
         </div>
             
         <div id="materiasContainer" class="grade"></div>
@@ -94,7 +95,7 @@
 
             if (resp.ok) {
                 fecharPopupEditar();
-                carregarMaterias(); // Atualiza a lista de matérias
+                carregarMaterias();
             } else {
                 alert('Erro ao salvar alterações.');
             }
@@ -119,7 +120,10 @@
         materiaDiv.style.cursor = 'pointer';
 
         materiaDiv.innerHTML = `
-            <span>${m.nome}</span>
+            <span style="text-shadow:-1px -1px 0 black,
+          2px -1px 0 black,
+          -1px  2px 0 black,
+          2px  2px 0 black">${m.nome}</span>
             <span class="editar-icon" style="position: absolute; top: 5px; right: 5px; cursor: pointer;">
                 ✏️
             </span>
@@ -158,13 +162,13 @@
 
             if (resp.ok) {
                 document.getElementById("formMateria").reset();
-                await carregarMaterias(); // atualiza a lista
+                await carregarMaterias(); 
             } else {
                 alert("Erro ao criar matéria.");
             }
         });
 
-        // Carrega ao abrir a página
+        
         carregarMaterias();
     </script>
 </body>

@@ -1,6 +1,10 @@
 package model;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,13 +20,13 @@ public class MateriaDAO {
         try (PreparedStatement stmt = conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, materia.getNome());
             stmt.setString(2, materia.getCor());
-            stmt.setInt(3, materia.getUsuarioId()); // Certifique-se de que o objeto Materia tem o usuarioId definido
+            stmt.setInt(3, materia.getUsuarioId()); 
             stmt.executeUpdate();
      
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
                 int idGerado = rs.getInt(1);
-                materia.setId(idGerado); // Agora o objeto tem o ID
+                materia.setId(idGerado); 
             }
         } catch (SQLException e) {
             e.printStackTrace();

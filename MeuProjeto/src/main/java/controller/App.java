@@ -21,14 +21,12 @@ import utils.Conexao;
 public class App {
     public static void main(String[] args) {
         System.out.println("🚀 Iniciando o servidor Spark...");
-        port(4567); // Define a porta explicitamente
+        port(4567); 
 
-        staticFiles.location("/public"); // Serve arquivos estáticos de /resources/public
+        staticFiles.location("/public"); 
 
-        // Configura resposta para HTML
         after((req, res) -> res.type("text/html"));
 
-        // Redireciona a rota raiz para o arquivo home.html
         get("/", (req, res) -> {
             System.out.println("Rota / acessada");
             res.redirect("/index.html");
@@ -99,7 +97,7 @@ public class App {
                 dao.adicionar(materia);
         
                 System.out.println("Matéria criada: " + nome + " (" + cor + ")");
-                res.redirect("/estudo.html"); // redireciona de volta
+                res.redirect("/estudo.html"); 
             } catch (Exception e) {
                 e.printStackTrace();
                 res.status(500);
@@ -197,7 +195,7 @@ public class App {
                 c.setCor(cor);
                 c.setHorasPlanejadas(horasPlanejadas);
                 c.setMateriaId(materiaId);
-                c.setEstudado(false); // default
+                c.setEstudado(false); 
 
                 dao.adicionar(c);
 
