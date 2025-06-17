@@ -19,7 +19,8 @@
   </div>
 
   <div class="botoes">
-    <div style="margin-top: -190px; margin-bottom: -100px;" class="botao">Voltar</div>
+    <div id="btnVoltar" style="margin-top: -190px; margin-bottom: -100px;" class="botao">Voltar</div>
+
      
     <div style="margin-top: -190px; margin-bottom: -100px;" class="botao" onclick="abrirPopupAdd()">Adicionar Conteúdo</div> 
   </div>
@@ -55,7 +56,7 @@
     </div>
   </div>
   
-  <img class="icone-dir" src="images/usuario.png" alt="Usuário" />
+  
 
 </div>
 
@@ -100,6 +101,11 @@
 
 
 <script>
+
+document.getElementById('btnVoltar').addEventListener('click', () => {
+  window.location.href = 'estudo.html';
+});
+
 
 function abrirFormularioEdicao(conteudo) {
   document.getElementById("editarId").value = conteudo.id;
@@ -187,12 +193,6 @@ function abrirFormularioEdicao(conteudo) {
         textoDiv.innerHTML = `<strong>${c.titulo}</strong><br>Horas: ${c.horasPlanejadas}`;
         textoDiv.style.flexGrow = "1";
         textoDiv.style.marginLeft = "-13vw";
-        textoDiv.style.textShadow =
-        `
-          -1px -1px 0 black,
-          1px -1px 0 black,
-          -1px  1px 0 black,
-          1px  1px 0 black`;
         textoDiv.style.marginTop = "-0.3vw";
 
 

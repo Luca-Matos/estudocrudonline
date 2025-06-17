@@ -233,7 +233,7 @@ body {
         margin-bottom: -20px;
       }
 
-      .subtitulo {
+      .subtitle {
         font-size: 8vw;
       }
     }
@@ -342,6 +342,12 @@ body {
   padding: 16px;
   box-sizing: border-box;
   min-height: 0;
+}
+
+@media (max-width: 900px) {
+    .subtitle {
+        margin-bottom: 3rem;
+    }
 }
 
 @media (min-width: 900px) {

@@ -1,7 +1,9 @@
 package controller;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.Gson;
 
@@ -9,17 +11,22 @@ import model.Conteudo;
 import model.ConteudoDAO;
 import model.Materia;
 import model.MateriaDAO;
+import model.ResumoDAO;
 import model.Usuario;
 import model.UsuarioDAO;
 import static spark.Spark.after;
 import static spark.Spark.get;
 import static spark.Spark.port;
 import static spark.Spark.post;
+import static spark.Spark.delete;
 import static spark.Spark.staticFiles;
 import utils.Conexao;
 
+
 public class App {
     public static void main(String[] args) {
+        
+        
         System.out.println("🚀 Iniciando o servidor Spark...");
         port(4567); 
 
@@ -146,6 +153,27 @@ public class App {
                 return new Gson().toJson(m);
             }
         });
+
+        
+
+// ...
+
+    delete("/materias/:id", (req, res) -> {
+        int id = Integer.parseInt(req.params(":id"));
+        System.out.println("Tentando deletar matéria com id: " + id);
+
+        try (Connection conexao = Conexao.getConexao()) {
+            MateriaDAO materiaDAO = new MateriaDAO(conexao);
+            materiaDAO.deletar(id);
+            res.status(200);
+            return "Matéria deletada com sucesso.";
+        } catch (Exception e) {
+            res.status(500);
+            return "Erro ao deletar matéria: " + e.getMessage();
+        }
+        
+    });
+
 
         post("/editar-materia", (req, res) -> {
             Usuario usuario = req.session().attribute("usuario");
@@ -295,6 +323,24 @@ public class App {
             res.status(404);
             return "Conteúdo não encontrado.";
         });
+
+        // resumos
+
+        get("/resumos", (req, res) -> {
+            res.type("application/json");
+            Gson gson = new Gson();
+
+            try {
+                ResumoDAO dao = new ResumoDAO(Conexao.getConexao()); // mesmo modelo das outras rotas
+                return gson.toJson(dao.listarResumo());
+            } catch (SQLException e) {
+                res.status(500);
+                return gson.toJson(Map.of("erro", "Erro ao carregar resumos"));
+            }
+        });
+
+        
+
     
 
     }
