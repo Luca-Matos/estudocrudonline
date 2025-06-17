@@ -162,6 +162,7 @@ function abrirFormularioEdicao(conteudo) {
       if (resp.ok) {
         document.getElementById("formConteudo").reset();
         carregarConteudos();
+        fecharPopupAdd();
       } else {
         alert("Erro ao criar conteúdo.");
       }

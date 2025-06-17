@@ -211,6 +211,7 @@ function fecharPopupResultados() {
             if (resp.ok) {
                 document.getElementById("formMateria").reset();
                 await carregarMaterias(); 
+                fecharPopupAdd();
             } else {
                 alert("Erro ao criar matéria.");
             }
