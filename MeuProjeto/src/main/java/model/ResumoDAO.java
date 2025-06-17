@@ -23,28 +23,31 @@ public class ResumoDAO {
         }
     }
 
-    public List<Map<String, Object>> listarResumo() throws SQLException {
-    String sql = """
-        SELECT r.data_estudo, m.nome AS materia, r.conteudo_titulo, r.horas_estudadas
-        FROM resumos r
-        JOIN materia m ON r.materia_id = m.id
-        ORDER BY r.data_estudo DESC
-    """;
-
-    List<Map<String, Object>> lista = new ArrayList<>();
-    try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
-        ResultSet rs = stmt.executeQuery();
-        while (rs.next()) {
-            Map<String, Object> linha = new HashMap<>();
-            linha.put("dataEstudo", rs.getTimestamp("data_estudo").toString()); // ou .toLocalDateTime().toString()
-            linha.put("materia", rs.getString("materia"));
-            linha.put("conteudoTitulo", rs.getString("conteudo_titulo"));
-            linha.put("horasEstudadas", rs.getInt("horas_estudadas"));
-            lista.add(linha);
+    public List<Map<String, Object>> listarResumo(int usuarioId) throws SQLException {
+        String sql = """
+            SELECT r.data_estudo, m.nome AS materia, r.conteudo_titulo, r.horas_estudadas
+            FROM resumos r
+            JOIN materia m ON r.materia_id = m.id
+            WHERE m.usuario_id = ?
+            ORDER BY r.data_estudo DESC
+        """;
+    
+        List<Map<String, Object>> lista = new ArrayList<>();
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setInt(1, usuarioId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Map<String, Object> linha = new HashMap<>();
+                linha.put("dataEstudo", rs.getTimestamp("data_estudo").toString());
+                linha.put("materia", rs.getString("materia"));
+                linha.put("conteudoTitulo", rs.getString("conteudo_titulo"));
+                linha.put("horasEstudadas", rs.getInt("horas_estudadas"));
+                lista.add(linha);
+            }
         }
+        return lista;
     }
-    return lista;
-}
+    
 
 
 

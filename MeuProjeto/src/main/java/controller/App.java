@@ -328,11 +328,12 @@ public class App {
 
         get("/resumos", (req, res) -> {
             res.type("application/json");
+            Usuario usuario = req.session().attribute("usuario");
             Gson gson = new Gson();
 
             try {
                 ResumoDAO dao = new ResumoDAO(Conexao.getConexao()); // mesmo modelo das outras rotas
-                return gson.toJson(dao.listarResumo());
+                return gson.toJson(dao.listarResumo(usuario.getId()));
             } catch (SQLException e) {
                 res.status(500);
                 return gson.toJson(Map.of("erro", "Erro ao carregar resumos"));
