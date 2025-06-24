@@ -5,12 +5,16 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Conexao {
-    private static final String URL = "jdbc:mysql://localhost:3306/estudocrud?useSSL=false&serverTimezone=UTC";
-    private static final String USUARIO = "root";
-    private static final String SENHA = "root";
-
     public static Connection getConexao() throws SQLException {
-        Connection conexao = DriverManager.getConnection(URL, USUARIO, SENHA);
+        String host = System.getenv("MYSQLHOST");
+        String port = System.getenv("MYSQLPORT");
+        String database = System.getenv("MYSQLDATABASE");
+        String user = System.getenv("MYSQLUSER");
+        String password = System.getenv("MYSQLPASSWORD");
+
+        String url = "jdbc:mysql://" + host + ":" + port + "/" + database + "?useSSL=false&serverTimezone=UTC";
+
+        Connection conexao = DriverManager.getConnection(url, user, password);
         System.out.println("✅ Conectado ao banco de dados com sucesso!");
         return conexao;
     }
