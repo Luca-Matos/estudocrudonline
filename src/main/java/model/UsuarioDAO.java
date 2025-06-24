@@ -15,7 +15,7 @@ public class UsuarioDAO {
     }
 
     public void inserir(Usuario usuario) {
-        String sql = "INSERT INTO Usuario (nome, email, senha) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO usuario (nome, email, senha) VALUES (?, ?, ?)";
     
         try (PreparedStatement stmt = conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, usuario.getNome());

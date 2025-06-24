@@ -103,7 +103,7 @@ public class ConteudoDAO {
     }
     
     public boolean atualizarEstudado(int conteudoId, boolean estudado) {
-        String sql = "UPDATE Conteudo SET status = ? WHERE id = ?";
+        String sql = "UPDATE conteudo SET status = ? WHERE id = ?";
         try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setBoolean(1, estudado);
             stmt.setInt(2, conteudoId);
